@@ -169,8 +169,37 @@ Building a FastAPI backend for an investment AI agent that processes BSE India a
 - `POST /api/chats/{chat_id}/messages` - Send message (SSE streaming)
 - `DELETE /api/chats/{chat_id}` - Delete chat
 
+### H. Resumable Background Jobs
+
+- **Job Tracking System** (`processing_jobs` table):
+  - Tracks detailed job progress across 8 processing steps
+  - Saves intermediate results after each step (PDF buffers, extractions, embeddings)
+  - Enables resume from last successful step on failure or cancellation
+  
+- **Resumable Processor** (`app/jobs/resumable_processor.py`):
+  - **Step-by-Step Processing**: Breaks job into 8 discrete, resumable steps
+  - **State Preservation**: Saves progress and intermediate data to `resume_data` JSONB field
+  - **Failure Recovery**: Can resume from exactly where it failed
+  - **Cancellation Support**: Users can cancel and resume later
+  
+- **API Endpoints**:
+  - **GET /api/projects/{id}/job**: Get detailed job status and progress
+  - **POST /api/projects/{id}/cancel**: Cancel running job (resumable)
+  - **POST /api/projects/{id}/resume**: Resume failed/cancelled job
+
+- **Features**:
+  - ✅ No data loss - all completed work preserved
+  - ✅ Progress tracking (percentage, current step, documents/embeddings count)
+  - ✅ Error details stored for debugging
+  - ✅ Only one active job per project (prevents conflicts)
+  - ✅ Automatic state saving after each step
+
 ## 7. Next Steps
 
-1. **Frontend Integration**: Build the UI for chat interface with SSE handling
+1. **Frontend Integration**: 
+   - Build the UI for chat interface with SSE handling
+   - Add Cancel/Resume buttons for project jobs
+   - Show job progress bar with current step
 2. **Performance**: Add caching for frequently searched queries
 3. **Analytics**: Track popular questions and search patterns
+4. **Job Cleanup**: Implement periodic cleanup of old completed jobs

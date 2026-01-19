@@ -160,3 +160,38 @@ class CompanySnapshot(Base):
     version = Column(Integer, default=1)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
+class ProcessingJob(Base):
+    """Track background job progress for resumable processing"""
+    __tablename__ = "processing_jobs"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), nullable=False)
+    job_id = Column(String(50), unique=True, nullable=False)
+    status = Column(String(20), default="pending")  # pending, running, completed, failed, cancelled
+    current_step = Column(String(50), nullable=True)
+    current_step_index = Column(Integer, default=0)
+    total_steps = Column(Integer, default=8)
+    
+    # Progress tracking
+    progress_data = Column(JSONB, default={})
+    documents_processed = Column(Integer, default=0)
+    embeddings_created = Column(Integer, default=0)
+    
+    # Error handling
+    error_message = Column(Text, nullable=True)
+    failed_step = Column(String(50), nullable=True)
+    retry_count = Column(Integer, default=0)
+    max_retries = Column(Integer, default=3)
+    
+    # Metadata
+    started_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+    cancelled_at = Column(DateTime, nullable=True)
+    
+    # Resume support
+    can_resume = Column(Integer, default=1)  # SQLite compatibility (0/1 instead of boolean)
+    last_successful_step = Column(String(50), nullable=True)
+    resume_data = Column(JSONB, default={})
+

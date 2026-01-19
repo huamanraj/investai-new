@@ -2,19 +2,22 @@
 Projects API Router
 """
 import asyncio
+import json
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db import get_db, Project, Document, CompanySnapshot
+from app.db import get_db, Project, Document, CompanySnapshot, ProcessingJob
 from app.schemas import (
     ProjectCreate, ProjectResponse, ProjectListResponse,
     ProjectStatusResponse, DocumentResponse, ProjectDetailResponse
 )
 from app.services import extract_company_name
-from app.jobs import process_project, get_job_status
+from app.services.progress_tracker import progress_tracker
+from app.jobs import process_project, get_job_status, process_project_resumable, cancel_job
 from app.core.logging import api_logger, console_logger
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
@@ -26,7 +29,7 @@ async def create_project(
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
-    """Create a new project from a BSE India URL"""
+    """Create a new project from a BSE India URL with resumable processing"""
     company_name = extract_company_name(project_data.source_url)
     console_logger.info(f"📝 Creating project for: {company_name}")
     
@@ -47,7 +50,13 @@ async def create_project(
     await db.commit()
     await db.refresh(project)
     
-    background_tasks.add_task(process_project, str(project.id), project_data.source_url)
+    # Use resumable processor
+    background_tasks.add_task(
+        process_project_resumable, 
+        str(project.id), 
+        project_data.source_url,
+        False  # Not a resume
+    )
     console_logger.info(f"✅ Project created: {project.id}")
     return project
 
@@ -123,12 +132,331 @@ async def get_project_snapshot(project_id: UUID, db: AsyncSession = Depends(get_
     }
 
 
-@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
-    """Delete a project"""
+@router.post("/{project_id}/cancel", status_code=status.HTTP_200_OK)
+async def cancel_project_job(project_id: UUID, db: AsyncSession = Depends(get_db)):
+    """
+    Cancel a running job for a project.
+    The job can be resumed later from the last successful step.
+    """
+    # Verify project exists
     result = await db.execute(select(Project).where(Project.id == project_id))
     project = result.scalar_one_or_none()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Cancel the job
+    cancelled = await cancel_job(str(project_id))
+    
+    if not cancelled:
+        raise HTTPException(
+            status_code=404, 
+            detail="No active job found for this project"
+        )
+    
+    console_logger.info(f"🛑 Job cancelled for project: {project_id}")
+    api_logger.info("Job cancelled", data={"project_id": str(project_id)})
+    
+    return {
+        "message": "Job cancelled successfully",
+        "project_id": str(project_id),
+        "can_resume": True
+    }
+
+
+@router.post("/{project_id}/resume", status_code=status.HTTP_200_OK)
+async def resume_project_job(
+    project_id: UUID,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Resume a failed or cancelled job from the last successful step.
+    If no job exists (e.g., background task crashed before creating job), starts a fresh job.
+    Also handles stale "running" jobs that were stopped unexpectedly.
+    """
+    from datetime import datetime, timedelta
+    
+    # Verify project exists
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # If project is already completed, don't allow resume
+    if project.status == "completed":
+        raise HTTPException(
+            status_code=400,
+            detail="Project is already completed. No resume needed."
+        )
+    
+    # Check if there's any job at all for this project
+    result = await db.execute(
+        select(ProcessingJob)
+        .where(ProcessingJob.project_id == project_id)
+        .order_by(ProcessingJob.updated_at.desc())
+    )
+    any_job = result.scalar_one_or_none()
+    
+    # If no job exists, start a fresh job (background task may have crashed before creating job)
+    if not any_job:
+        console_logger.info(f"🆕 No job found for project {project_id}, starting fresh job")
+        api_logger.info("Starting fresh job (no previous job found)", data={
+            "project_id": str(project_id)
+        })
+        
+        background_tasks.add_task(
+            process_project_resumable,
+            str(project_id),
+            project.source_url,
+            False  # Fresh start, not resume
+        )
+        
+        return {
+            "message": "Started fresh processing job (no previous job found)",
+            "project_id": str(project_id),
+            "resuming_from_step": None,
+            "failed_step": None
+        }
+    
+    # Check if job is marked as "running" but is actually stale
+    if any_job.status == "running":
+        # Calculate staleness threshold (5 minutes)
+        stale_threshold = datetime.utcnow() - timedelta(minutes=5)
+        
+        if any_job.updated_at and any_job.updated_at < stale_threshold:
+            # Job is stale - it was stuck/crashed unexpectedly
+            # Reset it to "failed" status so it can be resumed
+            console_logger.warning(
+                f"⚠️ Job {any_job.job_id} appears stale (last update: {any_job.updated_at}). "
+                f"Resetting to failed status for resume."
+            )
+            api_logger.warning("Stale running job detected, resetting to failed", data={
+                "project_id": str(project_id),
+                "job_id": any_job.job_id,
+                "last_updated": any_job.updated_at.isoformat() if any_job.updated_at else None,
+                "current_step": any_job.current_step
+            })
+            
+            # Update job to failed status
+            any_job.status = "failed"
+            any_job.failed_step = any_job.current_step
+            any_job.error_message = f"Job was stuck/crashed at step: {any_job.current_step}"
+            any_job.can_resume = 1
+            any_job.updated_at = datetime.utcnow()
+            
+            # Update project status too
+            project.status = "failed"
+            project.error_message = f"Job crashed at {any_job.current_step}"
+            
+            await db.commit()
+            await db.refresh(any_job)
+        else:
+            # Job is still actively running (updated recently)
+            raise HTTPException(
+                status_code=400,
+                detail="Job is currently running. Cancel it first if you want to restart."
+            )
+    
+    # Check if there's a resumable job (failed or cancelled)
+    if any_job.status in ["failed", "cancelled"] and any_job.can_resume:
+        console_logger.info(f"▶️ Resuming job for project: {project_id}")
+        api_logger.info("Job resumed", data={
+            "project_id": str(project_id),
+            "last_step": any_job.last_successful_step,
+            "failed_step": any_job.failed_step
+        })
+        
+        # Reset job status to running before starting
+        any_job.status = "running"
+        any_job.error_message = None
+        any_job.failed_step = None
+        any_job.updated_at = datetime.utcnow()
+        await db.commit()
+        
+        # Start resume in background
+        background_tasks.add_task(
+            process_project_resumable,
+            str(project_id),
+            project.source_url,
+            True  # Resume mode
+        )
+        
+        return {
+            "message": "Job resumed successfully",
+            "project_id": str(project_id),
+            "resuming_from_step": any_job.last_successful_step,
+            "failed_step": any_job.failed_step
+        }
+    
+    # Job exists but can't be resumed (maybe completed or can_resume=0)
+    raise HTTPException(
+        status_code=400,
+        detail=f"Job exists with status '{any_job.status}' but cannot be resumed."
+    )
+
+
+@router.get("/{project_id}/progress-stream")
+async def stream_project_progress(project_id: UUID, db: AsyncSession = Depends(get_db)):
+    """
+    Stream real-time progress updates for a project's processing job via SSE.
+    
+    Updates include:
+    - Validating link
+    - Scraping page
+    - Found PDFs
+    - Downloading PDFs
+    - Uploading to cloud
+    - Extracting data
+    - Creating embeddings
+    - Generating snapshot
+    - Completion status
+    
+    The stream automatically closes when job completes, fails, or is cancelled.
+    """
+    # Verify project exists
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get latest job
+    result = await db.execute(
+        select(ProcessingJob)
+        .where(ProcessingJob.project_id == project_id)
+        .order_by(ProcessingJob.updated_at.desc())
+    )
+    job = result.scalar_one_or_none()
+    
+    if not job:
+        raise HTTPException(
+            status_code=404,
+            detail="No processing job found for this project"
+        )
+    
+    job_id = job.job_id
+    
+    async def generate_progress_stream():
+        """Generate SSE stream of progress events"""
+        # Subscribe to progress updates
+        queue = await progress_tracker.subscribe(job_id)
+        
+        try:
+            console_logger.info(f"📡 Client subscribed to job {job_id} progress stream")
+            
+            # Check if job is already finished
+            finished_status = progress_tracker.is_job_finished(job_id)
+            
+            # Send initial connection event with job status
+            yield f"data: {json.dumps({'type': 'connected', 'job_id': job_id, 'message': 'Progress stream connected', 'already_finished': finished_status is not None})}\n\n"
+            
+            # Stream events as they come
+            while True:
+                try:
+                    # Wait for next event with timeout
+                    event = await asyncio.wait_for(queue.get(), timeout=30.0)
+                    
+                    # Format as SSE
+                    event_json = json.dumps(event)
+                    yield f"data: {event_json}\n\n"
+                    
+                    # Check if job is done
+                    if event.get("type") in ["completed", "error", "cancelled"]:
+                        console_logger.info(f"📡 Job {job_id} stream ending: {event.get('type')}")
+                        # Send final event and close
+                        yield f"data: {json.dumps({'type': 'stream_end', 'reason': event.get('type')})}\n\n"
+                        break
+                
+                except asyncio.TimeoutError:
+                    # Check if job finished during timeout (backup check)
+                    finished_status = progress_tracker.is_job_finished(job_id)
+                    if finished_status:
+                        console_logger.info(f"📡 Job {job_id} finished during timeout: {finished_status}")
+                        yield f"data: {json.dumps({'type': finished_status, 'message': f'Job {finished_status}'})}\n\n"
+                        yield f"data: {json.dumps({'type': 'stream_end', 'reason': finished_status})}\n\n"
+                        break
+                    
+                    # Send keep-alive ping every 30 seconds
+                    yield f": keep-alive\n\n"
+                
+                except asyncio.CancelledError:
+                    console_logger.info(f"📡 Client disconnected from job {job_id}")
+                    break
+        
+        finally:
+            # Unsubscribe when client disconnects or stream ends
+            progress_tracker.unsubscribe(job_id, queue)
+            console_logger.info(f"📡 Client unsubscribed from job {job_id}")
+    
+    return StreamingResponse(
+        generate_progress_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"  # Disable nginx buffering
+        }
+    )
+
+
+@router.get("/{project_id}/job", status_code=status.HTTP_200_OK)
+async def get_project_job_details(project_id: UUID, db: AsyncSession = Depends(get_db)):
+    """
+    Get detailed job information for a project.
+    Shows current step, progress, and whether job can be resumed.
+    """
+    # Verify project exists
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get latest job
+    result = await db.execute(
+        select(ProcessingJob)
+        .where(ProcessingJob.project_id == project_id)
+        .order_by(ProcessingJob.updated_at.desc())
+    )
+    job = result.scalar_one_or_none()
+    
+    if not job:
+        return {
+            "project_id": str(project_id),
+            "has_job": False,
+            "message": "No processing job found for this project"
+        }
+    
+    return {
+        "project_id": str(project_id),
+        "has_job": True,
+        "job_id": job.job_id,
+        "status": job.status,
+        "current_step": job.current_step,
+        "current_step_index": job.current_step_index,
+        "total_steps": job.total_steps,
+        "progress_percentage": round((job.current_step_index / job.total_steps) * 100, 1),
+        "last_successful_step": job.last_successful_step,
+        "failed_step": job.failed_step,
+        "error_message": job.error_message,
+        "can_resume": bool(job.can_resume),
+        "documents_processed": job.documents_processed,
+        "embeddings_created": job.embeddings_created,
+        "started_at": job.started_at.isoformat() if job.started_at else None,
+        "updated_at": job.updated_at.isoformat() if job.updated_at else None,
+        "completed_at": job.completed_at.isoformat() if job.completed_at else None,
+        "cancelled_at": job.cancelled_at.isoformat() if job.cancelled_at else None
+    }
+
+
+@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Delete a project and all associated data"""
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Cancel any running jobs first
+    await cancel_job(str(project_id))
+    
     await db.delete(project)
     await db.commit()
