@@ -1,0 +1,27 @@
+# InvestAI Backend Requirements
+
+# FastAPI
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.0
+pydantic-settings==2.5.0
+
+# Database
+sqlalchemy[asyncio]==2.0.32
+asyncpg==0.29.0
+pgvector==0.3.2
+
+# Playwright for scraping
+playwright==1.48.0
+
+# Cloudinary for PDF storage
+cloudinary==1.41.0
+
+# OpenAI (for later steps)
+openai==1.50.0
+
+# Utils
+python-dotenv==1.0.1
+python-multipart==0.0.9
+aiofiles==24.1.0
+requests==2.32.3

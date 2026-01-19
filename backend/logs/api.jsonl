@@ -1,0 +1,27 @@
+{"timestamp": "2026-01-19T09:55:40.517544", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T09:58:58.466208", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T09:58:59.686016", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T09:59:37.193363", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T09:59:38.400352", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T09:59:47.985461", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T09:59:49.174734", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:00:44.276363", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:00:48.449681", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:01:14.972573", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:01:16.324622", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:01:36.418171", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:01:39.539971", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:03:42.493393", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:03:43.750748", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:03:53.987329", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:03:55.238490", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:07:32.286906", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:09:03.453217", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:10:02.762244", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:10:38.872887", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:11:49.259686", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:11:50.599589", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:12:28.677072", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:12:29.975652", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T10:22:06.140650", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T10:22:08.711219", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
