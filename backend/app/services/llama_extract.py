@@ -14,7 +14,15 @@ from app.core.logging import job_logger, console_logger
 
 # Logs directory for extraction debug output
 LOGS_DIR = Path(__file__).parent.parent.parent / "logs"
-LOGS_DIR.mkdir(exist_ok=True)
+try:
+    LOGS_DIR.mkdir(exist_ok=True)
+except (OSError, PermissionError):
+    # In production/read-only filesystem, use /tmp
+    LOGS_DIR = Path("/tmp/investai_logs")
+    try:
+        LOGS_DIR.mkdir(exist_ok=True)
+    except Exception:
+        LOGS_DIR = None  # Disable logging if can't create directory
 
 
 class FinancialReportSchema(BaseModel):
@@ -255,6 +263,10 @@ class LlamaExtractService:
         result: Dict[str, Any]
     ):
         """Save extraction result to local logs folder for debugging"""
+        # Skip if logs directory is not available (e.g., read-only filesystem)
+        if LOGS_DIR is None:
+            return
+        
         try:
             # Create extraction logs subfolder
             extraction_logs_dir = LOGS_DIR / "extractions"

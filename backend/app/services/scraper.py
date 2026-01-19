@@ -79,10 +79,18 @@ class BSEScraper:
         
         try:
             with sync_playwright() as p:
-                # Launch browser
+                # Launch browser with production-ready args for containerized environments
                 browser = p.chromium.launch(
                     headless=self.headless,
-                    args=['--no-sandbox', '--disable-setuid-sandbox']
+                    args=[
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',  # Important for Docker/Render
+                        '--disable-gpu',  # Disable GPU in containers
+                        '--disable-software-rasterizer',
+                        '--single-process',  # Reduce memory usage
+                        '--no-zygote',  # Required for some container environments
+                    ]
                 )
                 
                 # Create context

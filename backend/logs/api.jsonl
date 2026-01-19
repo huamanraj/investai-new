@@ -55,3 +55,9 @@
 {"timestamp": "2026-01-19T18:36:57.030890", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-19T18:42:02.600584", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-19T18:44:50.634953", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "af298316-d423-44a1-aac4-fe81ccf89b1b", "title": "Vitma labs"}}
+{"timestamp": "2026-01-19T18:55:08.234996", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T18:55:10.325836", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T18:55:26.023076", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T18:55:27.933998", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T18:55:42.149539", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T18:55:44.164912", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}

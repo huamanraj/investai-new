@@ -1,0 +1,73 @@
+# Render Blueprint
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: investai-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter # Use 'starter' or 'standard' for more memory (Playwright needs ~512MB+)
+    healthCheckPath: /docs
+    autoDeploy: true
+    envVars:
+      # App Settings
+      - key: ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: APP_NAME
+        value: InvestAI
+      - key: HOST
+        value: "0.0.0.0"
+      - key: PORT
+        value: "8000"
+
+      # Database (set in Render dashboard)
+      - key: DATABASE_URL
+        sync: false # Set manually in Render dashboard
+
+      # OpenAI (set in Render dashboard)
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-large
+      - key: OPENAI_CHAT_MODEL
+        value: gpt-4o-mini
+
+      # Cloudinary (set in Render dashboard)
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # Llama Cloud (set in Render dashboard)
+      - key: LLAMA_CLOUD_API_KEY
+        sync: false
+
+      # Playwright Settings
+      - key: PLAYWRIGHT_HEADLESS
+        value: "true"
+      - key: PLAYWRIGHT_TIMEOUT
+        value: "60000"
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: /root/.cache/ms-playwright
+
+      # PDF Settings
+      - key: CHUNK_SIZE
+        value: "400"
+      - key: CHUNK_OVERLAP
+        value: "80"
+      - key: MAX_CHUNKS_PER_PAGE
+        value: "10"
+
+      # RAG Settings
+      - key: MAX_SIMILARITY_RESULTS
+        value: "25"
+      - key: MAX_PROJECTS_PER_CHAT
+        value: "5"
+
+      # Logging
+      - key: LOG_LEVEL
+        value: INFO
