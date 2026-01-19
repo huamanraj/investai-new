@@ -20,6 +20,10 @@ cloudinary==1.41.0
 # OpenAI (for later steps)
 openai==1.50.0
 
+# LlamaCloud (LlamaExtract)
+llama-cloud-services==0.6.6
+llama-cloud==0.1.18
+
 # Utils
 python-dotenv==1.0.1
 python-multipart==0.0.9

@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.logging import console_logger, api_logger
 from app.api import projects_router
+from app.api.chats import router as chats_router
 from app.db import init_db
 
 
@@ -55,6 +56,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(projects_router, prefix="/api")
+app.include_router(chats_router, prefix="/api")
 
 
 @app.get("/")

@@ -8,7 +8,8 @@ from .models import (
     Chat,
     Message,
     CompanySnapshot,
-    ProjectStatus
+    ProjectStatus,
+    ExtractionResult
 )
 
 __all__ = [
@@ -25,5 +26,6 @@ __all__ = [
     "Chat",
     "Message",
     "CompanySnapshot",
-    "ProjectStatus"
+    "ProjectStatus",
+    "ExtractionResult"
 ]

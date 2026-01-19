@@ -1,0 +1,1610 @@
+
+================================================================================
+LLAMA EXTRACT RESULT
+================================================================================
+Timestamp: 2026-01-19T11:21:16.308689
+Project ID: b875a96a-daf3-49af-b089-25f460e42853
+Filename: VIMTA LABS LTD_2025.pdf
+Success: True
+
+================================================================================
+EXTRACTED DATA
+================================================================================
+{
+  "company_name": "Vimta Labs Limited",
+  "fiscal_year": "2024-25",
+  "report_type": "Annual Report",
+  "revenue": 3482.22,
+  "revenue_unit": "million",
+  "net_profit": 667.55,
+  "operating_profit": 1262.0,
+  "eps": 30.28,
+  "revenue_growth": "19.1%",
+  "profit_growth": "",
+  "key_highlights": [
+    "Sale and transfer of Diagnostic and Pathological services business to Thyrocare Technologies Limited for \u20b970 million via slump sale on October 11, 2024.",
+    "Entered Brand and Trademarks License Agreement to receive 5% of the revenue from the sold business as Brand Royalty fee for at least 2 years.",
+    "Amalgamation of EMTAC Laboratories Private Limited (wholly owned subsidiary) with the Company, sanctioned by NCLT on January 23, 2025, effective April 1, 2024."
+  ],
+  "business_segments": [
+    "Contract research and testing services"
+  ],
+  "risk_factors": [
+    "Poor performance in regulatory and accreditation audits; risks related to IT/data management and system reliability (including cyber-attacks or system failures); service failures impacting reliability/compliance and customer trust; delayed results, risks in ROI, bad debts, and liquidity; violation of data confidentiality, security, and IP in agreements; inability to recruit/retain/motivate key personnel; changes in regulations and laws, economic downturns, steep competition, rising input costs, foreign exchange and interest rate volatility, terrorism, equipment/power failures, and natural calamities.",
+    "Identification, assessment, and strategic mitigation of key risks under oversight of the Risk Management Committee as per the Risk Management Policy.",
+    "Potential risks include financial, operational, sectoral, sustainability (ESG), information, cyber security, and other risks determined by the Risk Management Committee.",
+    "Disputed statutory dues: Provident Fund dues of Rs. 8.70 million (September 2014 to June 2016) pending before tribunal; GST penalty and interest dues of Rs. 4.95 million (FY 2017-18) under dispute, waiver application filed.",
+    "Market risk (including foreign exchange exposure to USD, EUR, GBP, CAD), credit risk (from trade receivables/deposits), liquidity risk (meeting financial obligations when due), and risk from concentration of counterparties/business activities (managed via diversification and hedging).",
+    "Defined benefit plan risks: asset volatility (investment returns below discount rates), changes in bond yields (may increase plan liabilities), increases in life expectancy (raise plan liabilities)."
+  ],
+  "outlook": "India's economic outlook remains broadly positive despite external headwinds, with stable macroeconomic framework and ongoing structural reforms expected to mitigate risks and support sustained medium-term growth. The Company is positive about its growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and electronics & electrical contract testing and research, with a strong customer base and promising pipelines giving good visibility of growth over the medium term. Over the long term, the Company aims for acquisitions or alliances to enhance market reach, capabilities and service portfolio. There is a positive trend in overseas markets and immense potential in the domestic market, though inflationary and pricing pressures are risks to monitor.",
+  "auditor": "Gattamaneni & Co., Chartered Accountants (Firm Regn. No. 009303S)",
+  "registered_office": "Plot Nos. 141/2 & 142, IDA Phase II, Cherlapally, Hyderabad - 500 051, Telangana, India."
+}
+
+================================================================================
+EXTRACTION METADATA
+================================================================================
+{
+  "field_metadata": {
+    "company_name": {
+      "reasoning": "The extraction is based on verbatim references from the official document text across all major sections (cover, notices, certificates, financial statements, auditor's report, policies, and contact information). Where variations like 'VIMTA LABS LIMITED' (uppercase) and 'Vimta Laboratories' appear, they are contextually shorthand or informal references. The most frequent and formal occurrence is 'Vimta Labs Limited', making it the definitive name per the provided evidence. VERBATIM EXTRACTION.",
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 5,
+            "matching_text": "RESOLVED FURTHER THAT the Board be and is hereby"
+          },
+          {
+            "page": 9,
+            "matching_text": "RESOLVED FURTHER THAT the Executive Directors and / or Company Secretary of the Company be and are hereby severally authorized to do all such acts, deeds, matters and things as may be considered ne..."
+          },
+          {
+            "page": 12,
+            "matching_text": "Item No.10: Addition of New Objects in the main Object Clause of the Memorandum of Association\n\nThe Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into th..."
+          },
+          {
+            "page": 20,
+            "matching_text": "A statement containing the relevant details is available on the Company's website: https://vimta.com/dividend-related/\nMembers are requested to note that the dividend remaining unclaimed for a cont..."
+          },
+          {
+            "page": 48,
+            "matching_text": "2.5 INFRASTRUCTURE\n\nVimta is one of India's largest Contract Research & Testing Organisations, headquartered in Hyderabad."
+          },
+          {
+            "page": 60,
+            "matching_text": "(f) Excess amount for set-off, if any: Nil | (i) Two percent of average net profit of the company as per sub-section (5) of Section 135 | 1,16,21,028/-"
+          }
+        ]
+      },
+      "value__": {
+        "citation": [
+          {
+            "page": 2,
+            "matching_text": "Vimta\nDriven by Quality. Inspired by Science.\n\n35th ANNUAL REPORT\n2025\n\nquality\nintegrity\nrespect\n\nVimta Labs Limited\nCIN: L24110TG1990PLC011977\n\nNotice Calling\n35th Annual General Meeting"
+          },
+          {
+            "page": 9,
+            "matching_text": "For Vimta Labs Limited"
+          },
+          {
+            "page": 14,
+            "matching_text": "For Vimta Labs Limited"
+          },
+          {
+            "page": 18,
+            "matching_text": "By Order of the Board For Vimta Labs Limited"
+          },
+          {
+            "page": 28,
+            "matching_text": "```markdown\n# 35th ANNUAL REPORT\n# 2025\n\nquality\nintegrity\nrespect\n\nVimta Labs Limited\nCIN: L24110TG1990PLC011977\n```"
+          },
+          {
+            "page": 48,
+            "matching_text": "VIMTA is adept at evaluating opportunities in a disciplined manner that is both capital intelligent and growth oriented."
+          },
+          {
+            "page": 52,
+            "matching_text": "Limited, (wholly owned subsidiary) with Vimta Labs Limited"
+          },
+          {
+            "page": 58,
+            "matching_text": "CSR programmes, projects and activities are independent from the normal business activities of Vimta."
+          },
+          {
+            "page": 61,
+            "matching_text": "For Vimta Labs Limited"
+          },
+          {
+            "page": 70,
+            "matching_text": "VIMTA LABS LIMITED."
+          },
+          {
+            "page": 76,
+            "matching_text": "The Board Diversity Policy ('the Policy') sets out the approach to diversity in the Board of Vimta Labs Limited (the Company')."
+          },
+          {
+            "page": 82,
+            "matching_text": "COMPANY'S PHILOSOPHY ON CORPORATE GOVERNANCE\n\nVimta Labs Limited's (\"Vimta\" or \"the Company\") Corporate Governance philosophy stems from the belief that Corporate Governance is a key element in improv..."
+          },
+          {
+            "page": 94,
+            "matching_text": "for Vimta Labs Limited"
+          },
+          {
+            "page": 97,
+            "matching_text": "For Vimta Labs Limited"
+          },
+          {
+            "page": 104,
+            "matching_text": "(Referred to in paragraph 2 under 'Report on Other Legal and Regulatory Requirements' section of our report of even date to the Members of Vimta Labs Limited)"
+          },
+          {
+            "page": 112,
+            "matching_text": "# Notes\nforming part of the financial statements\n\n1 General Information\nVimta Labs Limited (the Company) is a public limited company domiciled in India was incorporated on November 16, 1990 under the..."
+          },
+          {
+            "page": 151,
+            "matching_text": "Vimta"
+          },
+          {
+            "page": 162,
+            "matching_text": "2025\nAnnual Report\n\nCONTACT US\nRegistered Office:\nPlot Nos. 141/2 & 142, IDA Phase II,\nCherlapally, Hyderabad - 500 051,\nTelangana, India.\n\nEmail: shares@vimta.com\nWebsite: www.vimta.com"
+          }
+        ]
+      }
+    },
+    "fiscal_year": {
+      "reasoning": "VERBATIM EXTRACTION",
+      "value__": {
+        "citation": [
+          {
+            "page": 1,
+            "matching_text": "(AGM) of the Company for the FY 2024-25."
+          },
+          {
+            "page": 12,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 18,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 22,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 35,
+            "matching_text": "|      | 2020-21 | 2021-22 | 2022-23 | 2023-24 | 2024-25 |"
+          },
+          {
+            "page": 37,
+            "matching_text": "The EBIDTA for FY 2024-25 is 36.2% as compared to 33.4% of the previous year."
+          },
+          {
+            "page": 47,
+            "matching_text": "| Ratio                      | Financial Year 2024-25 | Financial Year 2023-24 |"
+          },
+          {
+            "page": 50,
+            "matching_text": "Your directors have recommended a dividend of \u20b9 2/- per equity share of \u20b9 2/- each, for FY 2024-25, subject to approval of members."
+          },
+          {
+            "page": 57,
+            "matching_text": "The said transaction was completed on 11th October 2024 and the Company cease to render diagnostic and pathological services w.e.f., 11th October 2024."
+          },
+          {
+            "page": 63,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 66,
+            "matching_text": "...14, details of the top ten employees of the Company who were employed throughout the financial year 2024-25 are available."
+          },
+          {
+            "page": 80,
+            "matching_text": "| Testing Services | Ongoing, w.e.f., 09th August 2024 | Services provided for \u20b9 0.40 million during the year | 08th November 2024 | Commensurate with market."
+          },
+          {
+            "page": 88,
+            "matching_text": "No Postal Ballot was conducted during the year 2024-25."
+          },
+          {
+            "page": 92,
+            "matching_text": "The consolidated fee paid by the Company and its subsidiary, to the statutory auditor for all the services during the Financial Year 2024-25 is \u20b9 2.72 million."
+          },
+          {
+            "page": 97,
+            "matching_text": "A. We have reviewed financial statements and cash flow statements for the financial year 2024-25, and that to the best of our knowledge and belief:"
+          },
+          {
+            "page": 106,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 110,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 131,
+            "matching_text": "...ny have recommended a final dividend of \u20b9 2/- per equity share of \u20b9 2/- each for the financial year 2024-25 (FY 2023-24: \u20b9 2/- per equity share of \u20b9 2/- each), subject to approval of the shareholders..."
+          },
+          {
+            "page": 133,
+            "matching_text": "| Particulars | 2024-25 | 2023-24 |"
+          },
+          {
+            "page": 143,
+            "matching_text": "| Tax expense at applicable tax rates March 31, 2025: 25.17% (March 31, 2024: 25.17%;) | 218.54 | 137.13 |"
+          },
+          {
+            "page": 148,
+            "matching_text": "| Particulars | As at 31 March 2025 | As at 31 March 2024 |"
+          },
+          {
+            "page": 151,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 157,
+            "matching_text": "| Particulars                                   | 10 October 2024 |"
+          }
+        ]
+      },
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 12,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 20,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 48,
+            "matching_text": "The broad range of industries that it serves and likewise its wide spectrum of services, are leveraged to stay resilient and pursue long term strategic objectives for growth."
+          },
+          {
+            "page": 95,
+            "matching_text": "We have examined the compliance of conditions of Corporate Governance by VIMTA LABS LIMITED (\"the Company\"), for the year ended on 31st March, 2025, as stipulated in Regulation 15(2) of Securities..."
+          },
+          {
+            "page": 106,
+            "matching_text": "No.210535)\nUDIN: 25210535BMIYLI8770\n\nPlace: Hyderabad\nDate: 28-04-2025\n\n35th Annual Report, 2024-25"
+          },
+          {
+            "page": 110,
+            "matching_text": "for the year ended March 31, 2025"
+          },
+          {
+            "page": 114,
+            "matching_text": "in the Statement of Profit and Loss."
+          }
+        ]
+      },
+      "reasoning__": {
+        "citation": [
+          {
+            "page": 57,
+            "matching_text": "including the Audit Committee, the Board believes that the Company's internal financial controls with reference to the financial statements were adequate and effective during the year ended 31st Ma..."
+          }
+        ]
+      }
+    },
+    "report_type": {
+      "reasoning": "VERBATIM EXTRACTION",
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 1,
+            "matching_text": "Sub: Submission of Annual Report along with notice of Annual General Meeting"
+          },
+          {
+            "page": 20,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 75,
+            "matching_text": "Annexures to Board's Report\n\nAnnexure - VII contd.,\n\nRemuneration to Non-executive / Independent Directors\nThe remuneration payable to each Non-Executive Director is based on the remuneration struc..."
+          },
+          {
+            "page": 89,
+            "matching_text": "No special resolution is proposed to be conducted through postal ballot on or before the ensuing Annual General Meeting."
+          },
+          {
+            "page": 106,
+            "matching_text": "Independent Auditor's Report on Financial Statements"
+          },
+          {
+            "page": 110,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 114,
+            "matching_text": "Notes forming part of the Financial Statements"
+          },
+          {
+            "page": 146,
+            "matching_text": "Notes forming part of the Financial Statements"
+          }
+        ]
+      },
+      "value__": {
+        "citation": [
+          {
+            "page": 2,
+            "matching_text": "Vimta\nDriven by Quality. Inspired by Science.\n\n35th ANNUAL REPORT\n2025\n\nquality\nintegrity\nrespect\n\nVimta Labs Limited\nCIN: L24110TG1990PLC011977\n\nNotice Calling\n35th Annual General Meeting"
+          },
+          {
+            "page": 12,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 18,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 22,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 28,
+            "matching_text": "```markdown\n# 35th ANNUAL REPORT\n# 2025\n\nquality\nintegrity\nrespect\n\nVimta Labs Limited\nCIN: L24110TG1990PLC011977\n```"
+          },
+          {
+            "page": 37,
+            "matching_text": "Your Directors are happy to present the 35th Annual Report together with the Audited Financial Statements of the Company for the year ended 31st March 2025."
+          },
+          {
+            "page": 48,
+            "matching_text": "Board's Report"
+          },
+          {
+            "page": 51,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 57,
+            "matching_text": "...orporate Governance by allowing paperless compliances by the Companies and permitted the service of Annual Reports and documents to the shareholders through electronic mode subject to certain conditio..."
+          },
+          {
+            "page": 62,
+            "matching_text": "Relevant disclosures in terms of the 'Guidance note on accounting for employee share-based payments' issued by ICAI form part of the notes to the financial statements provided in this Annual Report."
+          },
+          {
+            "page": 66,
+            "matching_text": "** The date of joining is as recorded as per the Corporate Governance report submitted to Stock Exchanges on quarterly basis."
+          },
+          {
+            "page": 77,
+            "matching_text": "# Annexures to Board's Report"
+          },
+          {
+            "page": 80,
+            "matching_text": "Annexures to Board's Report"
+          },
+          {
+            "page": 88,
+            "matching_text": "# Corporate Governance Report"
+          },
+          {
+            "page": 89,
+            "matching_text": "Annual reports with audited financial statements are sent to the shareholders through permitted mode."
+          },
+          {
+            "page": 100,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 106,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 110,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 151,
+            "matching_text": "35th Annual Report, 2024-25"
+          },
+          {
+            "page": 162,
+            "matching_text": "2025\nAnnual Report\n\nCONTACT US\nRegistered Office:\nPlot Nos. 141/2 & 142, IDA Phase II,\nCherlapally, Hyderabad - 500 051,\nTelangana, India.\n\nEmail: shares@vimta.com\nWebsite: www.vimta.com"
+          }
+        ]
+      }
+    },
+    "key_highlights": [
+      {
+        "reasoning": "VERBATIM EXTRACTION",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 5,
+              "matching_text": "of 1:1 i.e.,1 (One) bonus equity share for every 1 (One)"
+            },
+            {
+              "page": 12,
+              "matching_text": "Item No.10: Addition of New Objects in the main Object Clause of the Memorandum of Association\n\nThe Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into th..."
+            },
+            {
+              "page": 37,
+              "matching_text": "The EBIDTA for FY 2024-25 is 36.2% as compared to 33.4% of the previous year."
+            },
+            {
+              "page": 42,
+              "matching_text": "*   North America currently holds the largest market share in the pharmaceutical analytical testing market, driven by substantial investments in research and development"
+            },
+            {
+              "page": 50,
+              "matching_text": "Your directors have recommended a dividend of \u20b9 2/- per equity share of \u20b9 2/- each, for FY 2024-25, subject to approval of members."
+            },
+            {
+              "page": 60,
+              "matching_text": "(f) Excess amount for set-off, if any: Nil | (i) Two percent of average net profit of the company as per sub-section (5) of Section 135 | 1,16,21,028/-"
+            },
+            {
+              "page": 74,
+              "matching_text": "If, in any financial year, the Company has no profits or its profits are inadequate, the Company shall pay minimum remuneration to its Managing Director and the Whole-time Directors in accordance w..."
+            },
+            {
+              "page": 92,
+              "matching_text": "e) Subsidiary Companies\n\nAs part of our strategic objectives to enhance operational efficiency and strengthen our market position, we are pleased to announce the successful merger of our wholly own..."
+            },
+            {
+              "page": 123,
+              "matching_text": "(k) Significant judgements\n\nIn the process of applying the Company's accounting policies, the management has made the following judgements, which have the most significant effect on the amounts rec..."
+            },
+            {
+              "page": 131,
+              "matching_text": "The board of directors of the company have recommended a final dividend of \u20b9 2/- per equity share of \u20b9 2/- each for the financial year 2024-25 (FY 2023-24: \u20b9 2/- per equity share of \u20b9 2/- each), subje..."
+            },
+            {
+              "page": 156,
+              "matching_text": "Details of discontinued operations:\nThe company vide Business Transfer Agreement (BTA) dated August 30, 2024 entered into with Thyrocare Technologies Limited (Buyer) for sale and transfer of its Di..."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 5,
+              "matching_text": "of 1:1 i.e.,1 (One) bonus equity share for every 1 (One)"
+            },
+            {
+              "page": 12,
+              "matching_text": "Item No.10: Addition of New Objects in the main Object Clause of the Memorandum of Association\n\nThe Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into th..."
+            },
+            {
+              "page": 42,
+              "matching_text": "rise to USD 308.7 million by 2030, reflecting a CAGR of 10.7%"
+            },
+            {
+              "page": 46,
+              "matching_text": "Doubling of the EMC chamber capacity would help the company to meet the growing demand."
+            },
+            {
+              "page": 50,
+              "matching_text": "Your directors have recommended a dividend of \u20b9 2/- per equity share of \u20b9 2/- each, for FY 2024-25, subject to approval of members."
+            },
+            {
+              "page": 57,
+              "matching_text": "41 BUSINESS TRANSFER AGREEMENT\n\nDuring the year under review, your company has entered into Business Transfer Agreement (\"BTA\") on 30th August 2024 with Thyrocare Technologies Limited (\"Thyrocare\")..."
+            },
+            {
+              "page": 61,
+              "matching_text": "| Sl. No. | Preceding Financial Year(s) | Amount transferred to Unspent CSR Account under sub- section (6) of Section 135 (in \u20b9) | Balance Amount in Unspent CSR Account under sub- section (6) of Se..."
+            },
+            {
+              "page": 69,
+              "matching_text": "*   the Company has allotted 63,929 equity shares upon conversion of stock options which were granted under 'Vimta Labs Employee Stock Option Plan 2021' and necessary listing / trading approvals we..."
+            },
+            {
+              "page": 74,
+              "matching_text": "As per regulation 17A and 26 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 and Section 165 of Companies Act, 2013 and rules thereto:"
+            },
+            {
+              "page": 81,
+              "matching_text": "e) Green building certification: The preclinical research building at Life Sciences facility at Genome Valley, Hyderabad of the Company was awarded gold rating by Indian Green Building Council (IGBC)."
+            },
+            {
+              "page": 92,
+              "matching_text": "e) Subsidiary Companies\n\nAs part of our strategic objectives to enhance operational efficiency and strengthen our market position, we are pleased to announce the successful merger of our wholly own..."
+            },
+            {
+              "page": 103,
+              "matching_text": "In our opinion, to the best of our information and according to the explanations given to us, the Company has, in all material respects, an adequate internal financial controls with reference to fi..."
+            },
+            {
+              "page": 112,
+              "matching_text": "The Company is a leading contract research and testing services provider in India."
+            },
+            {
+              "page": 123,
+              "matching_text": "(k) Significant judgements\n\nIn the process of applying the Company's accounting policies, the management has made the following judgements, which have the most significant effect on the amounts rec..."
+            },
+            {
+              "page": 133,
+              "matching_text": "(g) The Board of Directors of the company has recommended the issue of Bonus shares of 1:1 on 28th April, 2025 subject to the approval of shareholders"
+            },
+            {
+              "page": 152,
+              "matching_text": "As the future liability for gratuity and leave encashment is provided on an actuarial basis for the Company as a whole, the amount pertaining to the Key Management Personnel and their relatives is..."
+            },
+            {
+              "page": 156,
+              "matching_text": "Details of discontinued operations:\nThe company vide Business Transfer Agreement (BTA) dated August 30, 2024 entered into with Thyrocare Technologies Limited (Buyer) for sale and transfer of its Di..."
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "VERBATIM EXTRACTION",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 5,
+              "matching_text": "for the issue of bonus equity shares as aforesaid to the"
+            },
+            {
+              "page": 12,
+              "matching_text": "Therefore, it is proposed to pass the Special Resolution authorising the Board to create charge on the movable or immovable properties of the Company for an aggregate amount upto \u20b9 300 Crores (Rupe..."
+            },
+            {
+              "page": 42,
+              "matching_text": "Market Size in USD Billion"
+            },
+            {
+              "page": 47,
+              "matching_text": "Ltd., the 100% owned subsidiary of Vimta, stands merged through an NCLT Order dated January 23, 2025, thereby consolidating its presence in the Electronics and Electrical testing."
+            },
+            {
+              "page": 61,
+              "matching_text": "| Sl. No. | Preceding Financial Year(s) | Amount transferred to Unspent CSR Account under sub- section (6) of Section 135 (in \u20b9) | Balance Amount in Unspent CSR Account under sub- section (6) of Se..."
+            },
+            {
+              "page": 91,
+              "matching_text": "No GDRs/ ADRs/Warrants or Convertible Instruments were issued by the Company."
+            },
+            {
+              "page": 156,
+              "matching_text": "In addition to the above consideration, the company through the Brand and Trademarks License Agreement (BTLA) with the buyer, will receive a Brand Royalty fee of 5% of the Revenue from this busines..."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 5,
+              "matching_text": "for the issue of bonus equity shares as aforesaid to the"
+            },
+            {
+              "page": 12,
+              "matching_text": "Therefore, it is proposed to pass the Special Resolution authorising the Board to create charge on the movable or immovable properties of the Company for an aggregate amount upto \u20b9 300 Crores (Rupe..."
+            },
+            {
+              "page": 42,
+              "matching_text": "Market Size in USD Billion"
+            },
+            {
+              "page": 47,
+              "matching_text": "Ltd., the 100% owned subsidiary of Vimta, stands merged through an NCLT Order dated January 23, 2025, thereby consolidating its presence in the Electronics and Electrical testing."
+            },
+            {
+              "page": 51,
+              "matching_text": "The Board of Directors at their meeting held on 28th April 2025, has recommended to the shareholders for their approval to issue bonus equity shares in the proportion of 1: 1, i.e., 1 (One) bonus e..."
+            },
+            {
+              "page": 55,
+              "matching_text": "With an employee base of 1,315, the company leverages the diverse and abundant skills and domain expertise to build a scientifically strong and quality driven organization."
+            },
+            {
+              "page": 60,
+              "matching_text": "(e) CSR Amount spent or unspent for the financial year :"
+            },
+            {
+              "page": 76,
+              "matching_text": "Company recognizes and embraces the benefits of having a diverse Board and sees increasing diversity at Board level as an essential element in achieving a sustainable development and a competitive..."
+            },
+            {
+              "page": 91,
+              "matching_text": "No GDRs/ ADRs/Warrants or Convertible Instruments were issued by the Company."
+            },
+            {
+              "page": 104,
+              "matching_text": "No material discrepancies were noticed between the physical stocks and the book stocks on such verification made during the year."
+            },
+            {
+              "page": 156,
+              "matching_text": "In addition to the above consideration, the company through the Brand and Trademarks License Agreement (BTLA) with the buyer, will receive a Brand Royalty fee of 5% of the Revenue from this busines..."
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "VERBATIM EXTRACTION",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 12,
+              "matching_text": "Item No.10: Addition of New Objects in the main Object Clause of the Memorandum of Association\n\nThe Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into th..."
+            },
+            {
+              "page": 42,
+              "matching_text": "*   Initiatives by health regulatory bodies, such as the World Health Organization's efforts to enhance clinical trial infrastructure in various therapeutic areas, are expected to propel the growth..."
+            },
+            {
+              "page": 48,
+              "matching_text": "Vimta has a network of 7 laboratories, including labs related to various divisions located at the headquarters, 1 Electricals & Electronics lab and 6 Food branch labs in India as on 31st March, 2025."
+            },
+            {
+              "page": 61,
+              "matching_text": "8) Whether any capital assets have been created or acquired through Corporate Social Responsibility amount spent in the Financial Year (Yes/No): No"
+            },
+            {
+              "page": 89,
+              "matching_text": "a) Distribution of Shareholding\n\nShareholding distribution as on 31st March 2025\n\n|Sl."
+            },
+            {
+              "page": 148,
+              "matching_text": "| Period in days | As at 31 March 2025 | As at 31 March 2024 |"
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 12,
+              "matching_text": "Item No.10: Addition of New Objects in the main Object Clause of the Memorandum of Association\n\nThe Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into th..."
+            },
+            {
+              "page": 41,
+              "matching_text": "The pharmaceutical analytical testing market is experiencing significant growth, projected to increase from USD 9.74 billion in 2025 to USD 14.58 billion by 2030, reflecting a CAGR of 8.41% during..."
+            },
+            {
+              "page": 47,
+              "matching_text": "VIMTA has the largest pan-India network of full-fledged laboratories, positioning it to take more market share within the industry and continue to grow."
+            },
+            {
+              "page": 61,
+              "matching_text": "8) Whether any capital assets have been created or acquired through Corporate Social Responsibility amount spent in the Financial Year (Yes/No): No"
+            },
+            {
+              "page": 81,
+              "matching_text": "f) Capital investment made on energy conservation equipment during the year is \u20b9 21.79 million."
+            },
+            {
+              "page": 91,
+              "matching_text": "The Company has made necessary arrangements with NSDL and CDSL for demat facility, and 99.22% of the Company's Shares are dematerialized as on 31st March 2025."
+            },
+            {
+              "page": 104,
+              "matching_text": "There were no undisputed amounts in respect of the above statutory dues as at 31 March 2025 outstanding for a period of more than six months from the date they became payable."
+            },
+            {
+              "page": 148,
+              "matching_text": "| Particulars | As at 31 March 2025 | As at 31 March 2024 |"
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 14,
+              "matching_text": "As Executive Director, Satya Sreenivas Neerukonda is responsible for development and implementation of strategic plans that meet business goals and objectives."
+            },
+            {
+              "page": 42,
+              "matching_text": "rise to USD 308.7 million by 2030, reflecting a CAGR of 10.7%"
+            },
+            {
+              "page": 46,
+              "matching_text": "The GMP, GLP and GCP compliant services have been successfully audited 175 times during the year by customers, regulatory agencies, accrediting and certifying bodies."
+            },
+            {
+              "page": 50,
+              "matching_text": "During the year under review, the Company has spent a total sum of \u20b9 1,16,21,028/- (One Crore Sixteen Lakh Twenty-One Thousand Twenty-Eight Rupees) on CSR activities as approved by the CSR Committe..."
+            },
+            {
+              "page": 64,
+              "matching_text": "In our opinion and to the best of our knowledge and according to the verifications as considered necessary and explanations furnished to us by the Company and its Officers, we certify that, the Com..."
+            },
+            {
+              "page": 92,
+              "matching_text": "Certificate from M/s D Hanumanta Raju & Co., practicing Company Secretaries, confirming compliance with the conditions of Corporate Governance as stipulated under SEBI (Listing Obligations and Disc..."
+            },
+            {
+              "page": 105,
+              "matching_text": "(ix) (a) The Company has not defaulted in repayment of loans or other borrowing or in the payment of interest thereon to any lender."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 14,
+              "matching_text": "The revision reflects his expanded responsibilities and aims to retain and motivate him in alignment with the Company's long-term goals."
+            },
+            {
+              "page": 42,
+              "matching_text": "rise to USD 308.7 million by 2030, reflecting a CAGR of 10.7%"
+            },
+            {
+              "page": 46,
+              "matching_text": "The GMP, GLP and GCP compliant services have been successfully audited 175 times during the year by customers, regulatory agencies, accrediting and certifying bodies."
+            },
+            {
+              "page": 50,
+              "matching_text": "During the year under review, the Company has spent a total sum of \u20b9 1,16,21,028/- (One Crore Sixteen Lakh Twenty-One Thousand Twenty-Eight Rupees) on CSR activities as approved by the CSR Committe..."
+            },
+            {
+              "page": 64,
+              "matching_text": "In our opinion and to the best of our knowledge and according to the verifications as considered necessary and explanations furnished to us by the Company and its Officers, we certify that, the Com..."
+            },
+            {
+              "page": 87,
+              "matching_text": "As on 31st March 2025, 2,20,60,338 Equity Shares of \u20b9 2/- each representing 99.22% of the total no."
+            },
+            {
+              "page": 92,
+              "matching_text": "d) Details of compliance with mandatory requirements on Corporate Governance under the SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015\n\nThe Company has complied with the ma..."
+            },
+            {
+              "page": 105,
+              "matching_text": "(ix) (a) The Company has not defaulted in repayment of loans or other borrowing or in the payment of interest thereon to any lender."
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 42,
+              "matching_text": "*   Initiatives by health regulatory bodies, such as the World Health Organization's efforts to enhance clinical trial infrastructure in various therapeutic areas, are expected to propel the growth..."
+            },
+            {
+              "page": 48,
+              "matching_text": "Your company firmly believes that it is on a strong growth path and has made the right investments with a capex outgo to the tune of \u20b9 791 Mns including infrastructure expansion at Vimta Life Scien..."
+            },
+            {
+              "page": 105,
+              "matching_text": "(viii) There were no transactions which are not recorded in the Books of account but which have been surrendered or disclosed as income during the year in the Tax assessments under the Income Tax Act,..."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 43,
+              "matching_text": "India's Testing, Inspection, and Certification (TIC) market is projected to reach USD 23,457.5 million by 2030, with a CAGR of 5.4% from 2025 to 2030."
+            },
+            {
+              "page": 48,
+              "matching_text": "Your company firmly believes that it is on a strong growth path and has made the right investments with a capex outgo to the tune of \u20b9 791 Mns including infrastructure expansion at Vimta Life Scien..."
+            },
+            {
+              "page": 51,
+              "matching_text": "15 CHANGES IN MEMORANDUM OF ASSOCIATION\nThe Board of Directors at their meeting held on 28th April 2025, has approved a proposal to foray into the Biologics Contract Research and Development (CDMO) se..."
+            },
+            {
+              "page": 105,
+              "matching_text": "(viii) There were no transactions which are not recorded in the Books of account but which have been surrendered or disclosed as income during the year in the Tax assessments under the Income Tax Act,..."
+            }
+          ]
+        }
+      },
+      {
+        "value__": {
+          "citation": [
+            {
+              "page": 44,
+              "matching_text": "The global food safety testing market is poised for significant growth, with projections indicating an increase from USD 25.33 billion in 2025 to USD 36.25 billion by 2030, reflecting a compound an..."
+            },
+            {
+              "page": 48,
+              "matching_text": "2.7 FORAY INTO BIOLOGICS\n\nYour company has decided to venture into the niche segment of contract research and development of Biologics and Peptides."
+            }
+          ]
+        },
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 48,
+              "matching_text": "2.7 FORAY INTO BIOLOGICS\n\nYour company has decided to venture into the niche segment of contract research and development of Biologics and Peptides."
+            }
+          ]
+        }
+      },
+      {
+        "value__": {
+          "citation": [
+            {
+              "page": 44,
+              "matching_text": "The India Food Safety Testing Market was valued at approximately USD 831.6 million in 2024 and is projected to reach USD 1,799.4 million by 2033, reflecting a compound annual growth rate (CAGR) of..."
+            }
+          ]
+        }
+      },
+      {
+        "value__": {
+          "citation": [
+            {
+              "page": 45,
+              "matching_text": "Valued at approximately USD 2.55 billion in 2023, the market is projected to reach USD 3.99 billion by 2030, reflecting a CAGR of 5.8% during the forecast period from 2024 to 2030."
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 42,
+              "matching_text": "rise to USD 308.7 million by 2030, reflecting a CAGR of 10.7%"
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 45,
+              "matching_text": "(Source: 6WResearch, Premium Market Insights)\n\nEnvironment Testing Industry\n\nGlobal\n\nThe global environmental testing market is anticipated to grow from USD 7.43 billion in 2025 to USD 9.32 billion..."
+            }
+          ]
+        }
+      }
+    ],
+    "business_segments": [
+      {
+        "reasoning": "VERBATIM EXTRACTION",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 6,
+              "matching_text": "Clause 7: To carry on, undertake, setup, establish, pursue, develop, assist, advice, consult, facilitate, Contract Research and Development Activities (CDMO), in the field of drug discovery, biotec..."
+            },
+            {
+              "page": 12,
+              "matching_text": "Item No.10: Addition of New Objects in the main Object Clause of the Memorandum of Association\n\nThe Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into th..."
+            },
+            {
+              "page": 39,
+              "matching_text": "and Europe are further accelerating the need for specialized contract research organization (CRO) services."
+            },
+            {
+              "page": 57,
+              "matching_text": "41 BUSINESS TRANSFER AGREEMENT\n\nDuring the year under review, your company has entered into Business Transfer Agreement (\"BTA\") on 30th August 2024 with Thyrocare Technologies Limited (\"Thyrocare\")..."
+            },
+            {
+              "page": 157,
+              "matching_text": "The Company is in the business of providing contract research and testing services."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 6,
+              "matching_text": "...7: To carry on, undertake, setup, establish, pursue, develop, assist, advice, consult, facilitate, Contract Research and Development Activities (CDMO), in the field of drug discovery, biotechnology,..."
+            },
+            {
+              "page": 12,
+              "matching_text": "...Board of Directors of the Company has approved a proposal for Vimta Labs Limited to foray into the Biologics Contract Research and Development (CDMO) segment, subject to approval of the shareholders."
+            },
+            {
+              "page": 34,
+              "matching_text": "- Drug discovery, development, and drug life cycle management support services in the areas of preclinical research, clinical research and analytical services for biopharmaceutical companies;"
+            },
+            {
+              "page": 39,
+              "matching_text": "and Europe are further accelerating the need for specialized contract research organization (CRO) services."
+            },
+            {
+              "page": 46,
+              "matching_text": "(Source: Industryarc, Research and Markets)\n\n2.1 COMPANY OUTLOOK\n\nYour Company is positive about its growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and..."
+            },
+            {
+              "page": 57,
+              "matching_text": "The said transaction was completed on 11th October 2024 and the Company cease to render diagnostic and pathological services w.e.f., 11th October 2024."
+            },
+            {
+              "page": 91,
+              "matching_text": "The Company's Central Laboratory is at Plot 141/2 & 142, IDA, Phase-II, Cherlapally, Hyderabad, Telangana - 500051."
+            },
+            {
+              "page": 117,
+              "matching_text": "The Company primarily earns revenue from Contract research and testing services."
+            },
+            {
+              "page": 121,
+              "matching_text": "...uirements of Ind AS 108 'Operating Segment' and the Company has only one reportable segment namely \"Contract Research and Testing Services\"."
+            },
+            {
+              "page": 157,
+              "matching_text": "The Company is in the business of providing contract research and testing services."
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 6,
+              "matching_text": "Clause 8: To carry on research and development of biologics, biosimilars, peptides and complex generics, the process and/or product development for manufacturing, formulation and packaging developm..."
+            },
+            {
+              "page": 39,
+              "matching_text": "and Europe are further accelerating the need for specialized contract research organization (CRO) services."
+            },
+            {
+              "page": 91,
+              "matching_text": "The Company has its Life Sciences Facility at Plot No.5, Neovantage Science & Technology Park, Genome Valley, Shamirpet, Telangana - 500101, India."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 6,
+              "matching_text": "Clause 8: To carry on research and development of biologics, biosimilars, peptides and complex generics, the process and/or product development for manufacturing, formulation and packaging development..."
+            },
+            {
+              "page": 34,
+              "matching_text": "- Preclinical research and testing services for medical device companies;"
+            },
+            {
+              "page": 40,
+              "matching_text": "- Pre-Clinical Services:"
+            },
+            {
+              "page": 46,
+              "matching_text": "(Source: Industryarc, Research and Markets)\n\n2.1 COMPANY OUTLOOK\n\nYour Company is positive about its growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and..."
+            },
+            {
+              "page": 91,
+              "matching_text": "The Company has its Life Sciences Facility at Plot No.5, Neovantage Science & Technology Park, Genome Valley, Shamirpet, Telangana - 500101, India."
+            }
+          ]
+        }
+      },
+      {
+        "value__": {
+          "citation": [
+            {
+              "page": 34,
+              "matching_text": "- Contract research and testing for agrochemical and specialty chemical companies;"
+            },
+            {
+              "page": 39,
+              "matching_text": "- Non-Clinical testing:"
+            },
+            {
+              "page": 46,
+              "matching_text": "(Source: Industryarc, Research and Markets)\n\n2.1 COMPANY OUTLOOK\n\nYour Company is positive about its growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and..."
+            }
+          ]
+        },
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 39,
+              "matching_text": "The global non-clinical testing market for agrochemicals is expected to grow steadily, with CAGR estimates ranging from 6% to 8% through 2030."
+            },
+            {
+              "page": 49,
+              "matching_text": "resources involved in our organization, and the inherent"
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 39,
+              "matching_text": "Bioanalytical testing and bioavailability/ bioequivalence (BA/BE) studies are essential to the drug development process particularly for generics, biosimilars, and complex formulations. These servi..."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 39,
+              "matching_text": "- Bioanalytical testing and bioavailability/bioequivalence (BA/BE)"
+            },
+            {
+              "page": 46,
+              "matching_text": "(Source: Industryarc, Research and Markets)\n\n2.1 COMPANY OUTLOOK\n\nYour Company is positive about its growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and..."
+            }
+          ]
+        }
+      },
+      {
+        "value__": {
+          "citation": [
+            {
+              "page": 46,
+              "matching_text": "VIMTA believes it is amongst the leaders in the domestic market for GMP analytical services and GLP nonclinical services."
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 46,
+              "matching_text": "(Source: Industryarc, Research and Markets)\n\n2.1 COMPANY OUTLOOK\n\nYour Company is positive about its growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and..."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 46,
+              "matching_text": "...growth prospects in clinical, pre-clinical, non-clinical, biopharmaceutical, pharma analytical, and electronics & electrical contract testing and research, all of which have a strong positive outlook..."
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 48,
+              "matching_text": "Vimta has a network of 7 laboratories, including labs related to various divisions located at the headquarters, 1 Electricals & Electronics lab and 6 Food branch labs in India as on 31st March, 2025."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 46,
+              "matching_text": "VIMTA continues to maintain its dominance in the domestic food testing and contract research services to biopharmaceuticals industry."
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 47,
+              "matching_text": "The environmental monitoring and testing services are strengthened with advanced analytical technologies such as Dioxin Analyzers to serve various segments of our economy."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 47,
+              "matching_text": "The environmental monitoring and testing services are strengthened with advanced analytical technologies such as Dioxin Analyzers to serve various segments of our economy."
+            }
+          ]
+        }
+      }
+    ],
+    "auditor": {
+      "reasoning": "The extracted data shows multiple, high-confidence and consistent mentions of 'Gattamaneni & Co., Chartered Accountants (Firm Regn. No. 009303S)' as Statutory Auditor, including signature blocks and audit opinions spanning from page 33 to page 160. Their details are provided verbatim, including the firm registration number, and they are repeatedly named as the signing and responsible entity for the statutory audit of the company's financial statements. The cost and secretarial auditors are also mentioned, but the Statutory Auditor (Gattamaneni & Co., Chartered Accountants (Firm Regn. No. 009303S)) is the primary auditor as per standard annual report structure.",
+      "value__": {
+        "citation": [
+          {
+            "page": 4,
+            "matching_text": "...of Directors, remuneration of \u20b9 50,000/- (Rupees Fifty Thousand only) plus applicable GST, fixed to M/s Lavanya & Associates, Cost Accountants, Hyderabad (Firm Regn."
+          },
+          {
+            "page": 10,
+            "matching_text": "Based on the recommendation of the Audit Committee, the Board of Directors at their meeting held on 28th April 2025 approved the reappointment of M/s Lavanya & Associates, Cost Accountants, Hyderab..."
+          },
+          {
+            "page": 33,
+            "matching_text": "No 009303S) Chartered Accountants, Hyderabad | D Hanumanta Raju & Co."
+          },
+          {
+            "page": 52,
+            "matching_text": "made thereunder, M/s Gattamaneni & Co., Chartered"
+          },
+          {
+            "page": 54,
+            "matching_text": "...) and Schedule of the SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015 from M/s D Hanumanta Raju & Co., Practicing Company Secretaries, Secretarial Auditors and attached the sa..."
+          },
+          {
+            "page": 64,
+            "matching_text": "For D. HANUMANTA RAJU & CO"
+          },
+          {
+            "page": 70,
+            "matching_text": "For D.HANUMANTA RAJU& CO"
+          },
+          {
+            "page": 92,
+            "matching_text": "k) Compliance Certificate\n\nCertificate from M/s D Hanumanta Raju & Co., practicing Company Secretaries, confirming compliance with the conditions of Corporate Governance as stipulated under SEBI (List..."
+          },
+          {
+            "page": 101,
+            "matching_text": "For GATTAMANENI & CO.,"
+          },
+          {
+            "page": 103,
+            "matching_text": "For GATTAMANENI & CO."
+          },
+          {
+            "page": 110,
+            "matching_text": "For Gattamaneni & Co"
+          },
+          {
+            "page": 160,
+            "matching_text": "For Gattamaneni & Co"
+          }
+        ]
+      },
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 64,
+            "matching_text": "Annexures to Board's Report\n\nAnnexure - III\nCOMPLIANCE CERTIFICATE\n[Pursuant to Regulation 13 of the Securities Exchange Board of India (Share Based Employee Benefits and Sweat Equity) Regulations,..."
+          },
+          {
+            "page": 95,
+            "matching_text": "Our examination was limited to procedures and implementation thereof, adopted by the Company for ensuring the compliance of the conditions of Corporate Governance."
+          },
+          {
+            "page": 106,
+            "matching_text": "auditor's knowledge of the Board of Directors and management plans, we are of the opinion that no material uncertainty exists as on the date of the audit report that company is capable of meeting i..."
+          },
+          {
+            "page": 110,
+            "matching_text": "Firm Registration No. 009303S"
+          }
+        ]
+      }
+    },
+    "registered_office": {
+      "reasoning": "The provided data contains multiple identical verbatim extractions of the registered office address. The most complete and formal presentation\u2014'Plot Nos. 141/2 & 142, IDA Phase II, Cherlapally, Hyderabad - 500 051, Telangana, India.'\u2014appears in both the Contact section and corporate information blocks. Other extractions, without the state name or slight alternations (e.g., 'RR Dist'), are less complete but not contradictory. Therefore, the most complete and frequently repeated version is chosen. VERBATIM EXTRACTION.",
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 1,
+            "matching_text": "142, IDA Phase II, Cherlapally"
+          },
+          {
+            "page": 12,
+            "matching_text": "Copy of the MOA duly incorporating the proposed additional clauses is available for inspection by the members at the registered office of the Company."
+          },
+          {
+            "page": 20,
+            "matching_text": "The Meeting shall be deemed to be held at the registered office of the Company at Plot No.141/2 & 142."
+          },
+          {
+            "page": 27,
+            "matching_text": "2025\nAnnual Report\n\nCONTACT US\nRegistered Office:\nPlot Nos. 141/2 & 142, IDA Phase II,\nCherlapally, Hyderabad - 500 051,\nTelangana, India.\n\nEmail: shares@vimta.com\nWebsite: www.vimta.com"
+          }
+        ]
+      },
+      "value__": {
+        "citation": [
+          {
+            "page": 1,
+            "matching_text": "142, IDA Phase II, Cherlapally"
+          },
+          {
+            "page": 20,
+            "matching_text": "IDA, Phase-II Cherlapally, Hyderabad, Telangana -500051."
+          },
+          {
+            "page": 27,
+            "matching_text": "2025\nAnnual Report\n\nCONTACT US\nRegistered Office:\nPlot Nos. 141/2 & 142, IDA Phase II,\nCherlapally, Hyderabad - 500 051,\nTelangana, India.\n\nEmail: shares@vimta.com\nWebsite: www.vimta.com"
+          },
+          {
+            "page": 64,
+            "matching_text": "...eferred to as 'the Company'), having CIN: L24110TG1990PLC011977 and having its registered office at 141/2 & 142, IDA Phase II, Cherlapally, RR Dist, Hyderabad - 500 051."
+          },
+          {
+            "page": 68,
+            "matching_text": "...e practices by VIMTA LABS LIMITED having CIN: L24110TG1990PLC011977 and having registered office at 141/2 &142, IDA Phase II, Cherlapally, RR Dist, Hyderabad - 500 051 (hereinafter called the \"Company..."
+          },
+          {
+            "page": 88,
+            "matching_text": "142, IDA Phase-II, Cherlapally, Hyderabad, Telangana - 500051 as detailed below:\n\n|Sl."
+          },
+          {
+            "page": 91,
+            "matching_text": "The Company's Central Laboratory is at Plot 141/2 & 142, IDA, Phase-II, Cherlapally, Hyderabad, Telangana - 500051."
+          },
+          {
+            "page": 96,
+            "matching_text": "...e Directors of VIMTA LABS LIMITED having CIN: L24110TG1990PLC011977 and having registered office at 141/2 &142, IDA Phase II, Cherlapally, RR District, Hyderabad - 500 051 (hereinafter referred to as..."
+          },
+          {
+            "page": 112,
+            "matching_text": "The registered office of the Company is situated at 141/2 & 142, IDA Phase II, Cherlapally, Hyderabad 500 051."
+          },
+          {
+            "page": 162,
+            "matching_text": "2025\nAnnual Report\n\nCONTACT US\nRegistered Office:\nPlot Nos. 141/2 & 142, IDA Phase II,\nCherlapally, Hyderabad - 500 051,\nTelangana, India.\n\nEmail: shares@vimta.com\nWebsite: www.vimta.com"
+          }
+        ]
+      }
+    },
+    "revenue": {
+      "reasoning": "The most complete and granular metric for total revenue is 'Total Income', typically including all sources of income (operational + other). Two sources provide nearly identical 'Total Income' values for 2024-25: \u20b93482.00 million (page 35) and \u20b93482.22 million (page 37). The more precise extraction is \u20b93482.22 million, which matches the table and narrative. The 'Revenue from Operations' value (\u20b93439.82 million) is consistent across two mentions but is a subset of total income. Therefore, the best extraction for 'revenue' (total income) for the period is \u20b93482.22 million. (Units: INR millions).",
+      "value__": {
+        "citation": [
+          {
+            "page": 35,
+            "matching_text": "| Total Income | 2115 | 2797 | 3216 | 2923 | 3482 |"
+          },
+          {
+            "page": 37,
+            "matching_text": "| I | Total Income | 3,482.22 | 2,923.05 |"
+          },
+          {
+            "page": 108,
+            "matching_text": "| Revenue from Operations | 22 | 3,439.82 | 2,885.95 |"
+          },
+          {
+            "page": 139,
+            "matching_text": "| TOTAL                                   | 3,439.82                | 2,885.94                |"
+          }
+        ]
+      },
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 108,
+            "matching_text": "for the year ended March 31, 2025"
+          },
+          {
+            "page": 138,
+            "matching_text": "| (c) The amount of interest due and payable for the period of delay in making payment (which have been paid but beyond the appointed day during the year) but without adding the interest specified..."
+          }
+        ]
+      }
+    },
+    "revenue_unit": {
+      "reasoning": "VERBATIM EXTRACTION",
+      "value__": {
+        "citation": [
+          {
+            "page": 35,
+            "matching_text": "Amount in \u20b9 Million"
+          },
+          {
+            "page": 37,
+            "matching_text": "PERFORMANCE\n\nFor FY 2024-25, your company recorded a revenue of 3,482.22 million as compared to 2,923.05 million in the previous year which in terms of growth is 19.1%, over previous year."
+          },
+          {
+            "page": 110,
+            "matching_text": "(Amount in INR millions, unless otherwise stated)"
+          },
+          {
+            "page": 143,
+            "matching_text": "(Amount in INR millions, unless otherwise stated)"
+          },
+          {
+            "page": 148,
+            "matching_text": "(Amount in INR millions, unless otherwise stated)"
+          }
+        ]
+      },
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 110,
+            "matching_text": "(Amount in INR millions, unless otherwise stated)"
+          },
+          {
+            "page": 140,
+            "matching_text": "(Amount in INR millions, unless otherwise stated)"
+          },
+          {
+            "page": 148,
+            "matching_text": "(Amount in INR millions, unless otherwise stated)"
+          }
+        ]
+      }
+    },
+    "operating_profit": {
+      "reasoning": "VERBATIM EXTRACTION",
+      "value__": {
+        "citation": [
+          {
+            "page": 108,
+            "matching_text": "| Profit before tax and exceptional item |  | 890.00 | 625.04 |"
+          }
+        ]
+      }
+    },
+    "eps": {
+      "reasoning": "Multiple verbatim extractions (P&L table and notes break-out) confirm EPS (Basic) as 30.28 for FY2025/2024-25. This value appears in the most authoritative parts of the report, so is selected. Verbatim extraction.",
+      "value__": {
+        "citation": [
+          {
+            "page": 36,
+            "matching_text": "|   | 9.69    | 18.70   | 21.77   | 22.04   | 30.02   |"
+          },
+          {
+            "page": 108,
+            "matching_text": "| Basic (INR) |  | 30.28 | 18.51 |"
+          },
+          {
+            "page": 144,
+            "matching_text": "| Basic Earnings per share (\u20b9) | 30.28 | 18.51 |"
+          }
+        ]
+      },
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 108,
+            "matching_text": "| XII. Earnings per share from continuing & discontinued operations | 30 |  |  |"
+          }
+        ]
+      }
+    },
+    "net_profit": {
+      "reasoning": "Multiple extractions (idx 6, 12) identify 667.55 as 'Net Profit' for the year, supported by labeled table columns and remuneration sections. This value is also clearly labeled as 'Net Profit (\u20b9 in Millions)' (page 67). The higher value, 673.42, includes discontinued operations and is not as directly labeled as 'Net Profit' per reporting conventions. As per instructions, select explicit, core net profit and report the unit (millions) as evidenced in the tables.",
+      "value__": {
+        "citation": [
+          {
+            "page": 37,
+            "matching_text": "| V | PAT (III-IV) | 667.55 | 488.11 |"
+          },
+          {
+            "page": 67,
+            "matching_text": "| 2 | Harita Vasireddi Managing Director | 35:1 | - | 13.44 | 667.55 |"
+          },
+          {
+            "page": 111,
+            "matching_text": "| Add: Profit for the year | - | - | 673.42 | - | - | 673.42 |"
+          },
+          {
+            "page": 144,
+            "matching_text": "| Profit including discontinued operations attributable to equity holders (in \u20b9 Million) | 673.42 | 410.09 |"
+          }
+        ]
+      },
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 67,
+            "matching_text": "|   |   |   |   | Remuneration paid (in Millions) | Performance of the Company for the year (Net Profit \u20b9 in Millions) |"
+          },
+          {
+            "page": 108,
+            "matching_text": "Profit for the year from continued & discontinued operations [V+VIII] |  | 673.42 | 410.09 |\n| X."
+          }
+        ]
+      }
+    },
+    "revenue_growth": {
+      "reasoning": "VERBATIM EXTRACTION",
+      "value__": {
+        "citation": [
+          {
+            "page": 37,
+            "matching_text": "PERFORMANCE\n\nFor FY 2024-25, your company recorded a revenue of 3,482.22 million as compared to 2,923.05 million in the previous year which in terms of growth is 19.1%, over previous year."
+          }
+        ]
+      }
+    },
+    "profit_growth": {
+      "reasoning": "INSUFFICIENT DATA"
+    },
+    "outlook": {
+      "reasoning": "VERBATIM EXTRACTION",
+      "scratchpad__": {
+        "citation": [
+          {
+            "page": 38,
+            "matching_text": "India's economic outlook remains broadly positive despite"
+          }
+        ]
+      },
+      "value__": {
+        "citation": [
+          {
+            "page": 38,
+            "matching_text": "India's economic outlook remains broadly positive despite"
+          }
+        ]
+      }
+    },
+    "risk_factors": [
+      {
+        "reasoning": "Combined verbatim extractions from idx:8, presenting a consolidated list without duplication.",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 48,
+              "matching_text": "Quality related risks: Poor performance in regulatory audits and accreditation body audits could adversely impact our business."
+            },
+            {
+              "page": 155,
+              "matching_text": "(c) Life expectancy: The defined benefit obligation is to provide benefits for the life of the member, so increases in life expectancy will result in an increase in the plans' liabilities. This is..."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 48,
+              "matching_text": "Quality related risks: Poor performance in regulatory audits and accreditation body audits could adversely impact our business."
+            },
+            {
+              "page": 155,
+              "matching_text": "Risk exposure\nThrough its defined benefit plans, the Company is exposed to a number of risks, the most significant of which are detailed below:\n(a) Asset volatility: The plan liabilities are calcul..."
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "VERBATIM EXTRACTION. High-level process risk, not duplicating specific risks from idx:8 and 15.",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 48,
+              "matching_text": "IT related risks: Our ability to serve customers effectively depends on the reliability of our data & information management and communication systems."
+            },
+            {
+              "page": 146,
+              "matching_text": "Interest rate risk is the risk that the fair value or future cash flows of a financial instrument will fluctuate because of changes in market interest rates. The Company's fixed rate borrowings are..."
+            },
+            {
+              "page": 155,
+              "matching_text": "(b) Changes in bond yields: A decrease in bond yields will increase plan liabilities, although this will be partially offset by an increase in the value of the plans' bond holdings."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 48,
+              "matching_text": "IT related risks: Our ability to serve customers effectively depends on the reliability of our data & information management and communication systems."
+            },
+            {
+              "page": 145,
+              "matching_text": "The Company's exposure to the risk of changes in foreign exchange rates relates primarily to the Company's operating activities (when revenue or expense is denominated in a foreign currency) in Uni..."
+            },
+            {
+              "page": 155,
+              "matching_text": "(b) Changes in bond yields: A decrease in bond yields will increase plan liabilities, although this will be partially offset by an increase in the value of the plans' bond holdings."
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "EXPLICIT LIST directly from governance/committee disclosure.",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "with scientifically reliable and accurate information;"
+            },
+            {
+              "page": 148,
+              "matching_text": "The Company's credit period for customers generally ranges from 0 - 180 days. The aging of trade receivables that are not due and past due but not impaired is given below:"
+            },
+            {
+              "page": 155,
+              "matching_text": "(c) Life expectancy: The defined benefit obligation is to provide benefits for the life of the member, so increases in life expectancy will result in an increase in the plans' liabilities."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "is related to our ability to deliver reports and projects"
+            },
+            {
+              "page": 147,
+              "matching_text": "The Company is exposed to credit risk from its operating activities (primarily trade receivables) and from its financing activities, including deposits with banks and financial institutions, foreign e..."
+            },
+            {
+              "page": 155,
+              "matching_text": "(c) Life expectancy: The defined benefit obligation is to provide benefits for the life of the member, so increases in life expectancy will result in an increase in the plans' liabilities."
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "Direct extraction of identified contingent risk exposures from idx:18.",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "or create risks in obtaining returns on such investment."
+            },
+            {
+              "page": 148,
+              "matching_text": "Management monitors rolling forecasts of the Company's liquidity position (comprising the undrawn borrowing facilities) and cash and cash equivalents on the basis of expected cash flows."
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "or create risks in obtaining returns on such investment."
+            },
+            {
+              "page": 148,
+              "matching_text": "Liquidity risk is the risk that the Company will not be able to meet its financial obligations as they become due. The Company manages its liquidity risk by ensuring, as far as possible, that it wi..."
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "Consolidated verbatim financial risks from idx:26, cross-referencing but not duplicating those listed in idx:8 and 15.",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "security and IP protection. Given the large scale of human"
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "security and IP protection. Given the large scale of human"
+            }
+          ]
+        }
+      },
+      {
+        "reasoning": "VERBATIM EXTRACTION from employee benefit risk sections.",
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "Growth and personnel related risks: Growth if not"
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "are unable to recruit, retain and motivate key personnel,"
+            }
+          ]
+        }
+      },
+      {
+        "scratchpad__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "service prices from competition; increase in prices of input"
+            }
+          ]
+        },
+        "value__": {
+          "citation": [
+            {
+              "page": 49,
+              "matching_text": "service prices from competition; increase in prices of input"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "usage": {
+    "num_pages_extracted": 162,
+    "num_document_tokens": 131079,
+    "num_output_tokens": 22905
+  },
+  "parse_job_id": null
+}
+
+================================================================================

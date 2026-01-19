@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 from sqlalchemy import (
-    Column, String, Text, DateTime, Integer, ForeignKey, Enum, ARRAY
+    Column, String, Text, DateTime, Integer, ForeignKey, Enum, ARRAY, Numeric
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import relationship
@@ -58,6 +58,25 @@ class Document(Base):
     # Relationships
     project = relationship("Project", back_populates="documents")
     pages = relationship("DocumentPage", back_populates="document", cascade="all, delete-orphan")
+    extraction_results = relationship("ExtractionResult", back_populates="document", cascade="all, delete-orphan")
+
+
+class ExtractionResult(Base):
+    """Structured data extracted from documents via LlamaExtract"""
+    __tablename__ = "extraction_results"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id", ondelete="CASCADE"), nullable=False)
+    extracted_data = Column(JSONB, nullable=False)  # Full extraction result
+    extraction_metadata = Column(JSONB, nullable=True)  # Citations, reasoning, etc.
+    company_name = Column(Text, nullable=True)
+    fiscal_year = Column(Text, nullable=True)
+    revenue = Column(Numeric, nullable=True)
+    net_profit = Column(Numeric, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    document = relationship("Document", back_populates="extraction_results")
 
 
 class DocumentPage(Base):
@@ -83,6 +102,7 @@ class TextChunk(Base):
     page_id = Column(UUID(as_uuid=True), ForeignKey("document_pages.id", ondelete="CASCADE"), nullable=False)
     chunk_index = Column(Integer, nullable=False)
     content = Column(Text, nullable=False)
+    field = Column(String(100), nullable=True)  # Source field (e.g., "financial_highlights", "risk_factors")
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -131,12 +151,12 @@ class Message(Base):
 
 
 class CompanySnapshot(Base):
-    """Pre-computed company summary for fast UI"""
+    """Pre-computed company summary for fast UI rendering"""
     __tablename__ = "company_snapshots"
     
     project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id", ondelete="CASCADE"), primary_key=True)
-    summary = Column(Text, nullable=True)
-    revenue_trend = Column(JSONB, nullable=True)
-    profit_trend = Column(JSONB, nullable=True)
-    risks = Column(Text, nullable=True)
-    updated_at = Column(DateTime, default=datetime.utcnow)
+    snapshot_data = Column(JSONB, nullable=False, default={})  # Complete snapshot JSON
+    generated_at = Column(DateTime, default=datetime.utcnow)
+    version = Column(Integer, default=1)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+

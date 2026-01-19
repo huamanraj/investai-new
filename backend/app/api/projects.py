@@ -8,7 +8,7 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db import get_db, Project, Document
+from app.db import get_db, Project, Document, CompanySnapshot
 from app.schemas import (
     ProjectCreate, ProjectResponse, ProjectListResponse,
     ProjectStatusResponse, DocumentResponse, ProjectDetailResponse
@@ -87,6 +87,40 @@ async def get_project_status(project_id: UUID, db: AsyncSession = Depends(get_db
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     return ProjectStatusResponse(project=project, job_status=get_job_status(str(project_id)))
+
+
+@router.get("/{project_id}/snapshot")
+async def get_project_snapshot(project_id: UUID, db: AsyncSession = Depends(get_db)):
+    """
+    Get company snapshot for a project.
+    Returns comprehensive company overview with financials, charts, and analysis.
+    """
+    # Verify project exists
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    
+    # Get snapshot
+    result = await db.execute(
+        select(CompanySnapshot).where(CompanySnapshot.project_id == project_id)
+    )
+    snapshot = result.scalar_one_or_none()
+    
+    if not snapshot:
+        raise HTTPException(
+            status_code=404,
+            detail="Snapshot not yet generated. Please wait for project processing to complete."
+        )
+    
+    return {
+        "project_id": str(project_id),
+        "company_name": project.company_name,
+        "snapshot": snapshot.snapshot_data,
+        "generated_at": snapshot.generated_at.isoformat() if snapshot.generated_at else None,
+        "updated_at": snapshot.updated_at.isoformat(),
+        "version": snapshot.version
+    }
 
 
 @router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT)

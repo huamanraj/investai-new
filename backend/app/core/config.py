@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     # Logging
     LOG_LEVEL: str = "INFO"
     
+    # LlamaCloud (LlamaExtract)
+    LLAMA_CLOUD_API_KEY: str = ""
+    
     model_config = SettingsConfigDict(
         env_file=str(BASE_DIR / ".env"),
         env_file_encoding="utf-8",

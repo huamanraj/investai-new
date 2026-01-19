@@ -25,3 +25,6 @@
 {"timestamp": "2026-01-19T10:12:29.975652", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-19T10:22:06.140650", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
 {"timestamp": "2026-01-19T10:22:08.711219", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T11:03:09.773579", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-19T11:16:19.217682", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-19T11:26:22.351290", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
