@@ -3,7 +3,7 @@ from .logging import (
     scraper_logger, 
     api_logger, 
     job_logger, 
-    cloudinary_logger,
+    
     console_logger
 )
 
@@ -13,6 +13,6 @@ __all__ = [
     "scraper_logger",
     "api_logger",
     "job_logger",
-    "cloudinary_logger",
+  
     "console_logger"
 ]

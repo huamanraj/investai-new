@@ -41,6 +41,8 @@ engine = create_async_engine(
     echo=False,  # Disable verbose SQL logging
     pool_size=5,
     max_overflow=10,
+    pool_pre_ping=True,  # Avoid "connection was closed in the middle of operation" after long waits
+    pool_recycle=1800,   # Recycle connections periodically to avoid stale connections
     connect_args={"ssl": True} if "neon.tech" in DATABASE_URL else {}
 )
 

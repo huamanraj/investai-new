@@ -44,8 +44,8 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright
-RUN pip install playwright==1.41.0
+# Install Playwright (already in requirements.txt)
+# RUN pip install playwright==1.41.0
 
 # Install only Chromium browser (without --with-deps to avoid font issues)
 RUN playwright install chromium

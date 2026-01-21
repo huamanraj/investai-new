@@ -24,7 +24,7 @@ class ProjectCreate(BaseModel):
         """Validate that the URL is a valid BSE India annual reports URL"""
         is_valid, error = validate_bse_url(v)
         if not is_valid:
-            raise ValueError(error)
+         raise ValueError(error)
         return v.strip()
 
 

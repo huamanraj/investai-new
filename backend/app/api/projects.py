@@ -10,14 +10,14 @@ from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.db import get_db, Project, Document, CompanySnapshot, ProcessingJob
+from app.db import get_db, Project, CompanySnapshot, ProcessingJob
 from app.schemas import (
     ProjectCreate, ProjectResponse, ProjectListResponse,
     ProjectStatusResponse, DocumentResponse, ProjectDetailResponse
 )
 from app.services import extract_company_name
 from app.services.progress_tracker import progress_tracker
-from app.jobs import process_project, get_job_status, process_project_resumable, cancel_job
+from app.jobs import process_project_resumable, cancel_job
 from app.core.logging import api_logger, console_logger
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
@@ -30,35 +30,64 @@ async def create_project(
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new project from a BSE India URL with resumable processing"""
-    company_name = extract_company_name(project_data.source_url)
-    console_logger.info(f"📝 Creating project for: {company_name}")
+    try:
+        company_name = extract_company_name(project_data.source_url)
+        console_logger.info(f"📝 Creating project for: {company_name}")
+        
+        # Check if exists
+        try:
+            existing = await db.execute(
+                select(Project).where(Project.source_url == project_data.source_url)
+            )
+            if existing.scalar_one_or_none():
+                raise HTTPException(status_code=400, detail="Project with this URL already exists")
+        except HTTPException:
+            raise  # Re-raise HTTP exceptions
+        except Exception as db_error:
+            console_logger.error(f"❌ Database error checking existing project: {db_error}")
+            raise HTTPException(
+                status_code=503,
+                detail="Database connection error. Please try again in a moment."
+            )
+        
+        # Create project
+        try:
+            project = Project(
+                company_name=company_name,
+                source_url=project_data.source_url,
+                exchange="BSE",
+                status="pending"
+            )
+            db.add(project)
+            await db.commit()
+            await db.refresh(project)
+        except Exception as db_error:
+            console_logger.error(f"❌ Database error creating project: {db_error}")
+            await db.rollback()
+            raise HTTPException(
+                status_code=503,
+                detail="Failed to create project due to database error. Please try again."
+            )
+        
+        # Use resumable processor
+        background_tasks.add_task(
+            process_project_resumable, 
+            str(project.id), 
+            project_data.source_url,
+            False  # Not a resume
+        )
+        console_logger.info(f"✅ Project created: {project.id}")
+        return project
     
-    # Check if exists
-    existing = await db.execute(
-        select(Project).where(Project.source_url == project_data.source_url)
-    )
-    if existing.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Project with this URL already exists")
-    
-    project = Project(
-        company_name=company_name,
-        source_url=project_data.source_url,
-        exchange="BSE",
-        status="pending"
-    )
-    db.add(project)
-    await db.commit()
-    await db.refresh(project)
-    
-    # Use resumable processor
-    background_tasks.add_task(
-        process_project_resumable, 
-        str(project.id), 
-        project_data.source_url,
-        False  # Not a resume
-    )
-    console_logger.info(f"✅ Project created: {project.id}")
-    return project
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions as-is
+    except Exception as e:
+        console_logger.error(f"❌ Unexpected error creating project: {e}")
+        api_logger.error("Project creation failed", data={"error": str(e)})
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to create project: {str(e)}"
+        )
 
 
 @router.get("", response_model=ProjectListResponse)
@@ -80,11 +109,31 @@ async def get_project(project_id: UUID, db: AsyncSession = Depends(get_db)):
     project = result.scalar_one_or_none()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+
+    job_result = await db.execute(
+        select(ProcessingJob)
+        .where(ProcessingJob.project_id == project_id)
+        .order_by(ProcessingJob.updated_at.desc())
+    )
+    latest_job = job_result.scalar_one_or_none()
+    job_status = None
+    if latest_job:
+        job_status = {
+            "job_id": latest_job.job_id,
+            "status": latest_job.status,
+            "current_step": latest_job.current_step,
+            "current_step_index": latest_job.current_step_index,
+            "total_steps": latest_job.total_steps,
+            "failed_step": latest_job.failed_step,
+            "error_message": latest_job.error_message,
+            "can_resume": bool(latest_job.can_resume),
+            "updated_at": latest_job.updated_at.isoformat() if latest_job.updated_at else None,
+        }
     
     return ProjectDetailResponse(
         project=ProjectResponse.model_validate(project),
         documents=[DocumentResponse.model_validate(d) for d in project.documents],
-        job_status=get_job_status(str(project_id))
+        job_status=job_status
     )
 
 
@@ -95,7 +144,54 @@ async def get_project_status(project_id: UUID, db: AsyncSession = Depends(get_db
     project = result.scalar_one_or_none()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
-    return ProjectStatusResponse(project=project, job_status=get_job_status(str(project_id)))
+
+    # Prefer DB-backed job status (resumable processor) over in-memory legacy status.
+    job_result = await db.execute(
+        select(ProcessingJob)
+        .where(ProcessingJob.project_id == project_id)
+        .order_by(ProcessingJob.updated_at.desc())
+    )
+    latest_job = job_result.scalar_one_or_none()
+
+    job_status = None
+    if latest_job:
+        job_status = {
+            "job_id": latest_job.job_id,
+            "status": latest_job.status,
+            "current_step": latest_job.current_step,
+            "current_step_index": latest_job.current_step_index,
+            "total_steps": latest_job.total_steps,
+            "failed_step": latest_job.failed_step,
+            "error_message": latest_job.error_message,
+            "can_resume": bool(latest_job.can_resume),
+            "updated_at": latest_job.updated_at.isoformat() if latest_job.updated_at else None,
+        }
+
+    # If job has a terminal state but project.status is stale (e.g. still "scraping"),
+    # reflect the terminal state in the response (and best-effort persist it).
+    effective_project = ProjectResponse.model_validate(project)
+    if latest_job and latest_job.status in {"failed", "cancelled", "completed"}:
+        desired_status = (
+            "failed" if latest_job.status in {"failed", "cancelled"} else "completed"
+        )
+        desired_error = (
+            latest_job.error_message
+            if latest_job.status in {"failed", "cancelled"}
+            else None
+        )
+
+        if effective_project.status != desired_status or effective_project.error_message != desired_error:
+            effective_project = effective_project.model_copy(
+                update={"status": desired_status, "error_message": desired_error}
+            )
+            try:
+                project.status = desired_status
+                project.error_message = desired_error
+                await db.commit()
+            except Exception:
+                await db.rollback()
+
+    return ProjectStatusResponse(project=effective_project, job_status=job_status)
 
 
 @router.get("/{project_id}/snapshot")
@@ -182,6 +278,13 @@ async def resume_project_job(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     
+    # Validate source_url exists
+    if not project.source_url:
+        raise HTTPException(
+            status_code=400,
+            detail="Project source URL is missing. Cannot resume job."
+        )
+    
     # If project is already completed, don't allow resume
     if project.status == "completed":
         raise HTTPException(
@@ -201,8 +304,14 @@ async def resume_project_job(
     if not any_job:
         console_logger.info(f"🆕 No job found for project {project_id}, starting fresh job")
         api_logger.info("Starting fresh job (no previous job found)", data={
-            "project_id": str(project_id)
+            "project_id": str(project_id),
+            "source_url": project.source_url
         })
+        
+        # Reset project status to pending
+        project.status = "pending"
+        project.error_message = None
+        await db.commit()
         
         background_tasks.add_task(
             process_project_resumable,
@@ -254,17 +363,22 @@ async def resume_project_job(
             # Job is still actively running (updated recently)
             raise HTTPException(
                 status_code=400,
-                detail="Job is currently running. Cancel it first if you want to restart."
+                detail=f"Job is currently running (last updated: {any_job.updated_at.isoformat() if any_job.updated_at else 'unknown'}). Cancel it first if you want to restart."
             )
     
     # Check if there's a resumable job (failed or cancelled)
     if any_job.status in ["failed", "cancelled"] and any_job.can_resume:
-        console_logger.info(f"▶️ Resuming job for project: {project_id}")
+        console_logger.info(f"▶️ Resuming job for project: {project_id} from step: {any_job.last_successful_step}")
         api_logger.info("Job resumed", data={
             "project_id": str(project_id),
             "last_step": any_job.last_successful_step,
-            "failed_step": any_job.failed_step
+            "failed_step": any_job.failed_step,
+            "source_url": project.source_url
         })
+        
+        # Reset project status for resume
+        project.status = "pending"
+        project.error_message = None
         
         # Reset job status to running before starting
         any_job.status = "running"
@@ -291,7 +405,7 @@ async def resume_project_job(
     # Job exists but can't be resumed (maybe completed or can_resume=0)
     raise HTTPException(
         status_code=400,
-        detail=f"Job exists with status '{any_job.status}' but cannot be resumed."
+        detail=f"Job exists with status '{any_job.status}' but cannot be resumed. Status: {any_job.status}, can_resume: {any_job.can_resume}"
     )
 
 

@@ -61,3 +61,204 @@
 {"timestamp": "2026-01-19T18:55:27.933998", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-19T18:55:42.149539", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
 {"timestamp": "2026-01-19T18:55:44.164912", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T06:39:21.992945", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T06:54:26.145976", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "7b07a65c-9b4e-442b-845c-15f969c3f3a4", "title": "hows the josh"}}
+{"timestamp": "2026-01-20T06:57:20.402906", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "4d94ecf9-38e9-40de-a857-6a7aa039b4b2", "title": "What were the key revenue driv"}}
+{"timestamp": "2026-01-20T07:06:23.893748", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "6b80a3b3-8c7d-47d2-b928-0465b0a2ffb7", "title": "whats the revinue"}}
+{"timestamp": "2026-01-20T07:18:18.291786", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:18:21.112604", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:19:11.444929", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:26:41.458822", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:36:35.683014", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:39:03.637472", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:41:10.589750", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:41:43.656844", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:44:52.993663", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:44:56.216171", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:45:13.670450", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:45:15.993877", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:46:34.489968", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:46:37.545287", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:47:04.827618", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:47:06.805477", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:47:20.160208", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:55:08.467335", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:55:11.448461", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:58:08.203012", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T07:58:10.634915", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T07:59:10.773979", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:01:09.061366", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:02:10.970431", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:02:13.079749", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:02:18.877648", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:02:34.152795", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:02:37.580007", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:03:29.043781", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:03:32.773707", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:03:39.807065", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:06:36.632415", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:06:39.530197", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:06:47.337169", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:06:49.710313", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:06:55.398958", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:09:36.930217", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:09:40.156533", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:10:04.555671", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:10:06.792871", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:10:25.675226", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:10:27.805504", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:13:46.391952", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:13:48.980098", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:13:54.428206", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:00.877729", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:14:03.062551", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:08.233987", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:14:10.436784", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:16.390493", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:14:18.762175", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:24.402088", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:30.011217", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:35.431142", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:42.314951", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:14:44.191263", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:49.865266", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:14:55.796698", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:15:01.081085", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:18:40.570918", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:18:43.867855", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:22:23.121176", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:22:26.475421", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:22:33.057201", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:22:40.211145", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:22:48.861808", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:22:51.501425", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:22:57.583362", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:23:04.611129", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:23:10.691802", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:23:40.595324", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:26:44.497910", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:26:47.047447", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:26:53.320012", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:30:46.546079", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:34:45.266019", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:34:48.029314", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:34:54.632989", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:35:00.729671", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:38:30.488135", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:40:16.355247", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:52:51.465005", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:52:56.774647", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:53:02.994225", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:53:08.669003", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:55:32.142375", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:57:22.847980", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T08:57:34.022288", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T08:57:36.584002", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:01:07.170490", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T09:02:46.175579", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:02:58.844628", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "18a0633b-8a43-47b2-8155-6661cc38d801"}}
+{"timestamp": "2026-01-20T09:21:20.424400", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T09:21:24.023715", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:21:30.197247", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:21:36.266124", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:21:43.043711", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:21:49.236584", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:21:56.922816", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:22:03.787140", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:27:44.340872", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "7589f9ee-cc9c-49b7-8737-9d1655971314", "last_step": "saving_extraction", "failed_step": "creating_embeddings"}}
+{"timestamp": "2026-01-20T09:28:40.954279", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T09:28:43.718136", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:28:49.489568", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:49:03.658317", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-20T09:49:06.408440", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:49:33.792986", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-20T09:59:46.303268", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "641042e2-d7ee-418b-8527-63e0a962104e", "title": "compare revinue of both"}}
+{"timestamp": "2026-01-20T10:00:32.510190", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "c91fbb43-1a38-45ea-a0ce-14bdfe1af9d3", "title": "which companies data is in you"}}
+{"timestamp": "2026-01-20T10:01:49.056721", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "d06d749f-cb8b-49dd-b5f8-4a25c5dd2a5f", "title": "which companies data is in you"}}
+{"timestamp": "2026-01-20T15:32:47.682606", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T06:43:54.633033", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:00:26.321308", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:21:57.067524", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:21:59.019645", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:24:32.344297", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:24:34.252232", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:24:48.888739", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:24:51.020922", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:25:08.635114", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:25:10.545000", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:28:15.384539", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:28:17.325147", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:30:39.094917", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:31:05.451212", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:39:30.562755", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:40:11.542484", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T07:41:01.915349", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T07:41:05.198577", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:00:20.724269", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:08:01.824383", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T08:08:45.496485", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:08:54.235896", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": "extracting"}}
+{"timestamp": "2026-01-21T08:11:37.746268", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T08:11:39.896428", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:11:47.452843", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": "extracting"}}
+{"timestamp": "2026-01-21T08:19:16.976798", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T08:21:11.275421", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:21:17.786288", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": "extracting"}}
+{"timestamp": "2026-01-21T08:30:21.873116", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:30:52.918111", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T08:30:58.682315", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T08:36:22.731627", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:36:59.405068", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:37:34.174331", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T08:38:07.210272", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:38:27.739555", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T08:38:30.175184", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T08:55:34.881401", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T08:55:59.404158", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T08:56:02.567137", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T09:08:46.826655", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:08:58.949726", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T09:09:00.813175", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T09:14:49.852744", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:16:11.403982", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:16:13.320978", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:16:52.576153", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:16:54.628964", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:17:01.607592", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:17:10.290035", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:17:28.273910", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T09:17:37.124893", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T09:24:47.329188", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:25:06.332425", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T09:25:06.689618", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T09:33:23.688568", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:36:05.031445", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:36:06.843756", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:36:12.215384", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:37:39.075338", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:37:40.952440", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:38:23.752581", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:38:25.547673", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:38:31.032641", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:39:43.011980", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:40:27.058539", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T09:45:05.131012", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:45:10.272010", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:45:23.777204", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T09:48:46.725736", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:49:05.610284", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T09:49:10.589443", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "downloading", "failed_step": null}}
+{"timestamp": "2026-01-21T09:52:19.164123", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:52:53.128039", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T09:53:00.379841", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T09:54:50.537988", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657"}}
+{"timestamp": "2026-01-21T09:55:10.860280", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "6e51abbf-6d21-4d26-b282-520e08c12657", "last_step": "saving_pages", "failed_step": null}}
+{"timestamp": "2026-01-21T09:57:03.510917", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965"}}
+{"timestamp": "2026-01-21T09:59:42.994295", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T10:02:10.708484", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T10:02:38.673609", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T10:02:57.407134", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T10:03:13.784268", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965"}}
+{"timestamp": "2026-01-21T10:03:23.423426", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T10:03:37.450457", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T10:03:49.644836", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965"}}

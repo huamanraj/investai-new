@@ -1,0 +1,65 @@
+
+================================================================================
+LLAMA EXTRACT RESULT
+================================================================================
+Timestamp: 2026-01-20T09:08:55.948872
+Project ID: 7589f9ee-cc9c-49b7-8737-9d1655971314
+Filename: AETHER INDUSTRIES LTD_2025.pdf
+Success: True
+
+================================================================================
+EXTRACTED DATA
+================================================================================
+{
+  "company_name": "Aether Industries Limited",
+  "fiscal_year": "2024-25",
+  "report_type": "Annual Report",
+  "revenue": 8803.0,
+  "revenue_unit": "millions",
+  "net_profit": 1569.7,
+  "operating_profit": 2109.3299999999995,
+  "eps": 11.73,
+  "revenue_growth": "Revenue growth reported in the annual report includes: (1) 38% year-over-year (Y/Y) growth (p.17\u201332), (2) a CAGR of 35% from FY19 to FY25 (p.86\u201392), (3) 104.36% Y/Y increase for key products (4MEP and T2E) to 240.19 Cr as of Q4 FY25 (p.92\u201398), and (4) overall Y/Y revenue growth figures of 40.21% (mentioned on pages 98\u2013111) and 40.20% (p.195\u2013203). Additional reference is a revenue growth of 32.43% (p.150\u2013157).",
+  "profit_growth": "The year-over-year profit growth is approximately 92% (various sources specify 92%, 92.05%, 92.04%, and 92.07% increase from FY24).",
+  "key_highlights": [
+    "Revenue from operations for FY2024-25 was \u20b98,386.90 million compared to \u20b95,981.72 million for FY2023-24.",
+    "Profit for the year increased to \u20b91,584.18 million from \u20b9824.90 million in the previous year.",
+    "Notable revenue increase in CEM & CRAMS and LSM business segments.",
+    "Company spent \u20b928.63 million on CSR activities in FY2024-25.",
+    "Return on Equity Ratio improved to 7.12% in FY2024-25 from 4.00% in FY2023-24.",
+    "Debt Service Coverage Ratio remained healthy at 19.34 for FY2024-25.",
+    "No events subsequent to March 31, 2025.",
+    "Company repaid all Term Loans and released the collaterals during the year."
+  ],
+  "business_segments": [
+    "Large Scale Manufacturing (LSM)",
+    "Contract / Exclusive Manufacturing (CEM)",
+    "Contract Research and Manufacturing Services (CRAMS)",
+    "Others"
+  ],
+  "risk_factors": [
+    "Credit risk: Risk of financial loss if customers or counterparties fail to meet contractual obligations.",
+    "Liquidity risk: Risk of encountering difficulty in meeting obligations associated with financial liabilities.",
+    "Market risk: Risk from changes in market prices, including foreign exchange rates and interest rates.",
+    "Foreign currency risk: Risk that fair value or cash flows will fluctuate due to currency rate changes.",
+    "Interest rate risk: Risk that fair value or cash flows will fluctuate due to changes in market interest rates."
+  ],
+  "outlook": "Aether Industries' outlook emphasizes leveraging its robust balance sheet and strategic capital deployment to capture opportunities and deepen global partnerships. Management aims to ramp up newly commissioned lines, expand CRAMS and contract manufacturing (expected to contribute over 70% of revenue), maintain margin discipline, and strengthen ESG practices by scaling captive renewable energy. The company is committed to continuous innovation, capacity expansion, adoption of digital technologies, and integrating QEHS and sustainability deeply into core operations and supply chains. Aether positions itself to capitalize on growth in the global and Indian specialty chemicals market through 2025 and beyond, supported by significant R&D investments and facility expansions. The first phase of Site 5 expansion is underway and expected to be operational from Q4 FY26. Management asserts the company\u2019s future operating cash flows and available credit facilities are adequate to support these initiatives, ensuring sustained, balanced, and responsible growth.",
+  "auditor": "Birju S. Shah & Associates",
+  "registered_office": "Aether Industries Limited, Plot No. 8203, GIDC Sachin, Surat - 394230, Gujarat, India"
+}
+
+================================================================================
+EXTRACTION METADATA
+================================================================================
+{
+  "field_metadata": {},
+  "usage": {
+    "num_pages_extracted": 209,
+    "num_document_tokens": 225757,
+    "num_output_tokens": 10351
+  },
+  "parse_job_id": null
+}
+
+================================================================================

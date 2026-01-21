@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-01-21T09:49:24.568425",
+  "project_id": "6e51abbf-6d21-4d26-b282-520e08c12657",
+  "filename": "AETHER INDUSTRIES LTD_2025.pdf",
+  "success": true,
+  "data": {
+    "company_name": null,
+    "fiscal_year": null,
+    "report_type": null,
+    "revenue": null,
+    "revenue_unit": null,
+    "net_profit": null,
+    "operating_profit": null,
+    "eps": null,
+    "revenue_growth": null,
+    "profit_growth": null,
+    "key_highlights": [],
+    "business_segments": [],
+    "risk_factors": [],
+    "outlook": null,
+    "auditor": null,
+    "registered_office": null,
+    "charts_data": []
+  },
+  "total_pages": 209,
+  "pages_extracted": 0,
+  "metadata": {
+    "model": "gpt-5-nano",
+    "extraction_method": "chunked_pdf_upload",
+    "chunks_processed": 42,
+    "pages_per_chunk": 5,
+    "extracted_at": "2026-01-21T09:49:24.568425"
+  }
+}

@@ -65,7 +65,7 @@ class JSONFileLogger:
 scraper_logger = JSONFileLogger("scraper")
 api_logger = JSONFileLogger("api")
 job_logger = JSONFileLogger("jobs")
-cloudinary_logger = JSONFileLogger("cloudinary")
+
 
 
 def setup_console_logging(level: str = "INFO"):

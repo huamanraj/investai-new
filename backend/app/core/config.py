@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-large"
     OPENAI_CHAT_MODEL: str = "gpt-4.1"
+    OPENAI_EXTRACTION_MODEL: str = "gpt-5-nano"  # Model for PDF text extraction
     
     # Cloudinary
     CLOUDINARY_CLOUD_NAME: str = ""
