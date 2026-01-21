@@ -1,18 +1,19 @@
 """
 GPT PDF Extractor Service
 Uses OpenAI's GPT-4o-mini model to extract COMPLETE text and context from PDFs
-Processes large PDFs in parallel using 3-page chunks for maximum speed
+Converts PDF pages to images and processes 3 images per API call sequentially (avoids rate limits)
 """
 import asyncio
 import base64
 import io
 import json
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Tuple
 from pathlib import Path
 
 from openai import AsyncOpenAI
-import PyPDF2
+import fitz  # PyMuPDF
+from PIL import Image
 
 from app.core.config import settings
 from app.core.logging import job_logger, console_logger
@@ -60,7 +61,7 @@ Rules:
 class GPTPDFExtractor:
     """
     Service for extracting COMPLETE text and context from PDFs using OpenAI GPT-4o-mini.
-    Processes large PDFs in parallel using 3-page chunks for maximum speed and accuracy.
+    Processes large PDFs sequentially using 3-page image chunks for speed and accuracy (avoids rate limits).
     """
     
     def __init__(self):
@@ -80,44 +81,70 @@ class GPTPDFExtractor:
         
         return self._client
     
-    def _split_pdf_into_chunks(self, pdf_buffer: bytes, pages_per_chunk: int = 3) -> List[bytes]:
+    def _convert_pdf_to_images(self, pdf_buffer: bytes) -> Tuple[List[Image.Image], int]:
         """
-        Split a PDF into smaller PDFs of N pages each (default 3 for fast parallel processing).
+        Convert PDF pages to images for faster processing using PyMuPDF.
+        No external dependencies required!
         
         Args:
             pdf_buffer: Original PDF as bytes
-            pages_per_chunk: Number of pages per chunk
             
         Returns:
-            List of PDF buffers, each containing pages_per_chunk pages
+            Tuple of (list of PIL Images, total_pages)
         """
         try:
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_buffer))
-            total_pages = len(pdf_reader.pages)
+            console_logger.info(f"🖼️ Converting PDF pages to images...")
             
-            console_logger.info(f"📄 Splitting {total_pages} pages into chunks of {pages_per_chunk}")
+            # Open PDF from bytes
+            doc = fitz.open(stream=pdf_buffer, filetype="pdf")
+            total_pages = len(doc)
             
-            chunks = []
-            for start_page in range(0, total_pages, pages_per_chunk):
-                end_page = min(start_page + pages_per_chunk, total_pages)
+            images = []
+            # Convert each page to image
+            for page_num in range(total_pages):
+                page = doc[page_num]
                 
-                # Create new PDF with just these pages
-                pdf_writer = PyPDF2.PdfWriter()
-                for page_num in range(start_page, end_page):
-                    pdf_writer.add_page(pdf_reader.pages[page_num])
+                # Render page to pixmap (image)
+                # zoom=1.5 gives ~150 DPI (balance between quality and speed)
+                mat = fitz.Matrix(1.5, 1.5)
+                pix = page.get_pixmap(matrix=mat, alpha=False)
                 
-                # Write to bytes buffer
-                chunk_buffer = io.BytesIO()
-                pdf_writer.write(chunk_buffer)
-                chunk_buffer.seek(0)
-                chunks.append(chunk_buffer.read())
+                # Convert pixmap to PIL Image
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                images.append(img)
             
-            console_logger.info(f"✅ Created {len(chunks)} PDF chunks")
-            return chunks
+            doc.close()
+            
+            console_logger.info(f"✅ Converted {total_pages} pages to images")
+            
+            return images, total_pages
             
         except Exception as e:
-            console_logger.error(f"❌ Failed to split PDF: {e}")
+            console_logger.error(f"❌ Failed to convert PDF to images: {e}")
             raise
+    
+    def _image_to_base64(self, image: Image.Image) -> str:
+        """
+        Convert PIL Image to base64 string for API transmission.
+        
+        Args:
+            image: PIL Image object
+            
+        Returns:
+            Base64 encoded string with data URI prefix
+        """
+        # Convert to RGB if necessary
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
+        
+        # Compress to JPEG with good quality
+        buffer = io.BytesIO()
+        image.save(buffer, format='JPEG', quality=85, optimize=True)
+        buffer.seek(0)
+        
+        # Encode to base64
+        img_base64 = base64.standard_b64encode(buffer.read()).decode('utf-8')
+        return f"data:image/jpeg;base64,{img_base64}"
     
     def _parse_json_object_from_text(self, text: str) -> Dict[str, Any]:
         """Best-effort parse of a JSON object from model output_text."""
@@ -144,19 +171,19 @@ class GPTPDFExtractor:
 
     async def _extract_chunk(
         self,
-        chunk_buffer: bytes,
+        images: List[Image.Image],
+        page_numbers: List[int],
         chunk_index: int,
-        start_page: int,
         filename: str,
         project_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
-        Extract text from a single PDF chunk (3 pages).
+        Extract text from 3 PDF pages (as images) in a single API call.
         
         Args:
-            chunk_buffer: PDF chunk as bytes
+            images: List of PIL Images (3 pages)
+            page_numbers: List of page numbers for these images
             chunk_index: Index of this chunk (for logging)
-            start_page: Starting page number (1-indexed) for this chunk
             filename: Original filename
             project_id: Project ID for logging
             
@@ -165,47 +192,44 @@ class GPTPDFExtractor:
         """
         client = self._get_client()
         
-        # Calculate actual page numbers for this chunk
-        pdf_reader = PyPDF2.PdfReader(io.BytesIO(chunk_buffer))
-        num_pages_in_chunk = len(pdf_reader.pages)
-        end_page = start_page + num_pages_in_chunk - 1
-        
-        # Build explicit page number list for the prompt
-        page_numbers = list(range(start_page, end_page + 1))
+        num_pages = len(images)
+        start_page = page_numbers[0]
+        end_page = page_numbers[-1]
         page_numbers_str = ", ".join(str(p) for p in page_numbers)
         
         console_logger.info(f"📄 Extracting chunk {chunk_index + 1} (pages {start_page}-{end_page})...")
         
-        # Convert chunk to base64
-        chunk_base64 = base64.standard_b64encode(chunk_buffer).decode("utf-8")
-
         try:
+            # Build content array with text prompt + all images
+            content = [
+                {
+                    "type": "input_text",
+                    "text": (
+                        f"Extract content from these {num_pages} PDF pages (pages {page_numbers_str}). "
+                        f"Use these EXACT page numbers as keys in your JSON response. "
+                        f"{COMPLETE_PDF_EXTRACTION_PROMPT}"
+                    ),
+                }
+            ]
+            
+            # Add all images to the content
+            for idx, image in enumerate(images):
+                image_base64 = self._image_to_base64(image)
+                content.append({
+                    "type": "input_image",
+                    "image_url": image_base64,
+                })
+            
+            # Make API call with all 3 images
             response = await client.responses.create(
                 model=self.extraction_model,
-                input=[
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "input_file",
-                                "filename": f"{filename}_chunk_{chunk_index + 1}.pdf",
-                                "file_data": f"data:application/pdf;base64,{chunk_base64}",
-                            },
-                            {
-                                "type": "input_text",
-                                "text": (
-                                    f"This PDF chunk contains pages {page_numbers_str}. "
-                                    f"Use these EXACT page numbers as keys in your JSON response. "
-                                    f"{COMPLETE_PDF_EXTRACTION_PROMPT}"
-                                ),
-                            },
-                        ],
-                    }
-                ],
-                
+                input=[{
+                    "role": "user",
+                    "content": content,
+                }],
             )
 
-            # Parse response - responses API exposes output_text
+            # Parse response
             result_raw = (getattr(response, "output_text", None) or "").strip()
 
             # Save debug output in development mode
@@ -250,15 +274,15 @@ class GPTPDFExtractor:
                 # Old format fallback: {"pages": ["text1", "text2", "text3"]}
                 for idx, text in enumerate(page_data):
                     page_text = text if isinstance(text, str) else str(text)
-                    pages.append({"page_number": start_page + idx, "text": page_text})
+                    pages.append({"page_number": page_numbers[idx], "text": page_text})
             
             # Sort pages by page_number to ensure correct order
             pages.sort(key=lambda x: x["page_number"])
 
             # If GPT returned fewer pages than expected, log warning
-            if len(pages) < num_pages_in_chunk:
+            if len(pages) < num_pages:
                 console_logger.warning(
-                    f"⚠️ Chunk {chunk_index + 1}: Expected {num_pages_in_chunk} pages, "
+                    f"⚠️ Chunk {chunk_index + 1}: Expected {num_pages} pages, "
                     f"got {len(pages)} from GPT. Some pages may be missing."
                 )
             
@@ -279,7 +303,7 @@ class GPTPDFExtractor:
     ) -> Dict[str, Any]:
         """
         Extract COMPLETE text and context from a PDF buffer.
-        Splits large PDFs into 3-page chunks and processes IN PARALLEL for maximum speed.
+        Converts PDF pages to images and processes 3 images per API call SEQUENTIALLY to avoid rate limits.
         
         Args:
             pdf_buffer: PDF file as bytes
@@ -302,65 +326,66 @@ class GPTPDFExtractor:
         
         console_logger.info(f"📊 Starting COMPLETE PDF text extraction for: {filename}")
         job_logger.info(
-            f"Starting PDF extraction with GPT-4o-mini (parallel processing)",
+            f"Starting PDF extraction with GPT-4o-mini (sequential image processing)",
             project_id=project_id,
             data={"filename": filename, "size_mb": len(pdf_buffer) / 1024 / 1024}
         )
         
         try:
-            # Step 1: Split PDF into chunks
+            # Step 1: Convert PDF pages to images
             if on_progress:
-                on_progress({"message": "Preparing PDF chunks...", "step": "preparation"})
+                on_progress({"message": "Converting PDF pages to images...", "step": "preparation"})
             
-            chunks = self._split_pdf_into_chunks(pdf_buffer, self.pages_per_chunk)
-            total_chunks = len(chunks)
+            images, total_pages = self._convert_pdf_to_images(pdf_buffer)
             
-            # Get total page count
-            pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_buffer))
-            total_pages = len(pdf_reader.pages)
+            # Step 2: Group images into chunks of 3
+            images_per_chunk = self.pages_per_chunk
+            total_chunks = (total_pages + images_per_chunk - 1) // images_per_chunk
             
-            console_logger.info(f"📄 Processing {total_pages} pages in {total_chunks} chunks IN PARALLEL...")
+            console_logger.info(f"📄 Processing {total_pages} pages in {total_chunks} chunks ({images_per_chunk} images per API call) SEQUENTIALLY...")
             
-            # Step 2: Extract text from ALL chunks in parallel using asyncio.gather
-            if on_progress:
-                on_progress({
-                    "message": f"Extracting all {total_chunks} chunks in parallel...",
-                    "step": "extraction",
-                    "progress": 10
-                })
-            
-            # Create all extraction tasks
-            extraction_tasks = []
-            for chunk_idx, chunk_buffer in enumerate(chunks):
-                start_page = chunk_idx * self.pages_per_chunk + 1
-                
-                task = self._extract_chunk(
-                    chunk_buffer=chunk_buffer,
-                    chunk_index=chunk_idx,
-                    start_page=start_page,
-                    filename=filename,
-                    project_id=project_id
-                )
-                extraction_tasks.append(task)
-            
-            # Execute all chunks in parallel
-            console_logger.info(f"🚀 Launching {total_chunks} parallel API calls...")
-            chunk_results = await asyncio.gather(*extraction_tasks, return_exceptions=True)
-            
-            # Process results and handle any errors
+            # Step 3: Process chunks sequentially (one at a time to avoid rate limits)
             all_pages = []
-            for chunk_idx, result in enumerate(chunk_results):
-                if isinstance(result, Exception):
-                    console_logger.error(f"❌ Chunk {chunk_idx + 1} failed: {result}")
-                    continue
+            
+            for chunk_idx in range(total_chunks):
+                start_idx = chunk_idx * images_per_chunk
+                end_idx = min(start_idx + images_per_chunk, total_pages)
                 
-                if isinstance(result, list):
-                    all_pages.extend(result)
+                # Get images for this chunk
+                chunk_images = images[start_idx:end_idx]
+                # Page numbers are 1-indexed
+                chunk_page_numbers = list(range(start_idx + 1, end_idx + 1))
+                
+                # Update progress
+                if on_progress:
+                    progress = int((chunk_idx / total_chunks) * 90) + 10  # 10-100%
+                    on_progress({
+                        "message": f"Extracting pages {chunk_page_numbers[0]}-{chunk_page_numbers[-1]} ({chunk_idx + 1}/{total_chunks})...",
+                        "step": "extraction",
+                        "progress": progress
+                    })
+                
+                # Extract this chunk (3 images in one API call)
+                try:
+                    chunk_pages = await self._extract_chunk(
+                        images=chunk_images,
+                        page_numbers=chunk_page_numbers,
+                        chunk_index=chunk_idx,
+                        filename=filename,
+                        project_id=project_id
+                    )
+                    
+                    if isinstance(chunk_pages, list):
+                        all_pages.extend(chunk_pages)
+                        
+                except Exception as e:
+                    console_logger.error(f"❌ Chunk {chunk_idx + 1} failed: {e}")
+                    continue
             
             # Sort pages by page number to ensure correct order
             all_pages.sort(key=lambda x: x.get("page_number", 0))
             
-            console_logger.info(f"✅ Extracted text from {len(all_pages)} pages total (parallel processing)")
+            console_logger.info(f"✅ Extracted text from {len(all_pages)} pages total (sequential processing)")
             
             # Step 3: Extract basic document info from first few pages
             doc_summary = {}
@@ -404,11 +429,11 @@ class GPTPDFExtractor:
                 "total_pages": total_pages,
                 "metadata": {
                     "model": self.extraction_model,
-                    "extraction_method": "parallel_chunked_pdf_upload",
+                    "extraction_method": "sequential_image_based",
                     "chunks_processed": total_chunks,
-                    "pages_per_chunk": self.pages_per_chunk,
+                    "images_per_chunk": self.pages_per_chunk,
                     "extracted_at": datetime.utcnow().isoformat(),
-                    "processing_mode": "parallel"
+                    "processing_mode": "sequential_images"
                 },
                 "filename": filename,
                 "extracted_at": datetime.utcnow().isoformat()
@@ -417,15 +442,15 @@ class GPTPDFExtractor:
             # Save extraction log
             self._save_extraction_log(project_id, filename, extraction_result)
             
-            console_logger.info(f"✅ GPT extraction complete for: {filename} (parallel processing)")
+            console_logger.info(f"✅ GPT extraction complete for: {filename} (sequential image processing)")
             job_logger.info(
-                f"Extraction completed successfully with parallel processing",
+                f"Extraction completed successfully with sequential image processing",
                 project_id=project_id,
                 data={
                     "filename": filename,
                     "pages_extracted": len(all_pages),
                     "chunks_processed": total_chunks,
-                    "processing_mode": "parallel"
+                    "processing_mode": "sequential_images"
                 }
             )
             

@@ -25,6 +25,10 @@ openai>=1.56.1,<2.0.0
 llama-cloud-services==0.6.6
 llama-cloud==0.1.18
 
+# PDF Processing (PyMuPDF - no external dependencies!)
+PyMuPDF==1.24.14
+Pillow==10.4.0
+
 # Utils
 python-dotenv==1.0.1
 python-multipart==0.0.9

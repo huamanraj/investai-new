@@ -1,6 +1,6 @@
 """
 Company Snapshot Generator
-Analyzes extraction data and embeddings to create comprehensive company snapshots using GPT-5-nano
+Analyzes extraction data and embeddings to create comprehensive company snapshots using GPT-4.1-nano
 Extracts 5-10 pages of detailed financial analysis from annual reports
 """
 import json
@@ -247,13 +247,13 @@ Ensure all numeric values are actual numbers (not strings) except for percentage
 
 
 class SnapshotGenerator:
-    """Service for generating comprehensive company snapshots using GPT-5-nano analysis"""
+    """Service for generating comprehensive company snapshots using GPT-4.1-nano analysis"""
     
     def __init__(self):
         self.configured = bool(settings.OPENAI_API_KEY and 
                                settings.OPENAI_API_KEY != "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         self._client = None
-        self.model = "gpt-5-nano"  # Using GPT-5-nano for comprehensive extraction
+        self.model = "gpt-4.1-nano"  # Using GPT-4.1-nano for comprehensive extraction
     
     def _get_client(self) -> AsyncOpenAI:
         """Lazy initialization of OpenAI client"""
@@ -267,7 +267,7 @@ class SnapshotGenerator:
     
     async def generate_snapshot(
         self,
-        extraction_data: Dict[str, Any],
+        extraction_data: Dict[str, Any] | str,
         company_name: str,
         source_url: str,
         project_id: Optional[str] = None
@@ -277,7 +277,7 @@ class SnapshotGenerator:
         Extracts 5-10 pages worth of detailed financial analysis.
         
         Args:
-            extraction_data: Extracted data from PDF extraction
+            extraction_data: Extracted data from PDF extraction (can be dict or raw text string)
             company_name: Company name
             source_url: BSE source URL
             project_id: Project ID for logging
@@ -287,9 +287,12 @@ class SnapshotGenerator:
         """
         if not self.configured:
             console_logger.warning("⚠️ OpenAI not configured, generating basic snapshot")
+            # Handle string input for basic snapshot
+            if isinstance(extraction_data, str):
+                extraction_data = {"complete_text": extraction_data}
             return self._generate_basic_snapshot(extraction_data, company_name)
         
-        console_logger.info(f"📊 Generating comprehensive AI-powered snapshot for {company_name} using GPT-5-nano...")
+        console_logger.info(f"📊 Generating comprehensive AI-powered snapshot for {company_name} using GPT-4.1-nano...")
         job_logger.info(
             "Starting comprehensive snapshot generation",
             project_id=project_id,
@@ -300,9 +303,11 @@ class SnapshotGenerator:
             client = self._get_client()
             
             # Build comprehensive prompt with all available data
+            # Handle both dict and string input
             prompt = self._build_comprehensive_prompt(extraction_data, company_name, source_url)
             
-            # Call GPT-5-nano for comprehensive analysis
+            # Call GPT-4.1-nano for comprehensive analysis
+            # NOTE: GPT-4.1-nano only supports default temperature (1), don't pass temperature parameter
             response = await client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -315,9 +320,9 @@ class SnapshotGenerator:
                         "content": prompt
                     }
                 ],
-                temperature=0.2,
                 max_completion_tokens=16000,  # Increased for comprehensive extraction
                 response_format={"type": "json_object"}
+                # Do NOT pass temperature - GPT-4.1-nano only supports default (1)
             )
             
             # Parse GPT response
@@ -346,17 +351,38 @@ class SnapshotGenerator:
                 project_id=project_id,
                 data={"error": str(e)}
             )
-            # Fallback to basic snapshot
-            return self._generate_basic_snapshot(extraction_data, company_name)
+            # Re-raise exception so job can fail and be resumed
+            # Don't fallback silently - let the job processor handle retry/resume
+            raise
     
     def _build_comprehensive_prompt(
         self,
-        extraction_data: Dict[str, Any],
+        extraction_data: Dict[str, Any] | str,
         company_name: str,
         source_url: str
     ) -> str:
-        """Build comprehensive prompt for GPT-5-nano snapshot generation"""
+        """Build comprehensive prompt for GPT-4.1-nano snapshot generation"""
         
+        # Handle string input (raw text from LlamaParse)
+        if isinstance(extraction_data, str):
+            # If it's raw text, use it directly in the prompt
+            # Limit to ~100k chars to avoid token limits (GPT-4.1-nano has large context window)
+            text_preview = extraction_data[:100000] if len(extraction_data) > 100000 else extraction_data
+            if len(extraction_data) > 100000:
+                text_preview += "\n\n[... text truncated for length ...]"
+            
+            return f"""Analyze the following complete annual report text for {company_name} and create a COMPREHENSIVE investment snapshot.
+
+**Company Information:**
+- Company Name: {company_name}
+- Source: {source_url}
+
+**Complete Annual Report Text:**
+{text_preview}
+
+Please extract ALL financial data, metrics, trends, business segments, risks, and strategic information from this text and structure it according to the JSON schema provided in the system prompt."""
+        
+        # Handle dict input (structured data)
         # Extract all available data
         fiscal_year = extraction_data.get("fiscal_year", "N/A")
         revenue = extraction_data.get("revenue", "N/A")
@@ -423,17 +449,25 @@ Create the most comprehensive analysis possible from the available data. Aim for
     def _enhance_snapshot(
         self,
         snapshot_json: Dict[str, Any],
-        extraction_data: Dict[str, Any],
+        extraction_data: Dict[str, Any] | str,
         company_name: str,
         source_url: str
     ) -> Dict[str, Any]:
         """Enhance the GPT-generated snapshot with metadata and ensure all sections exist"""
         
+        # Handle string input (raw text) - create empty dict for metadata extraction
+        extraction_dict = {}
+        if isinstance(extraction_data, dict):
+            extraction_dict = extraction_data
+        elif isinstance(extraction_data, str):
+            # For string input, we can't extract structured fields, use defaults
+            extraction_dict = {}
+        
         # Add metadata section
         snapshot_json["metadata"] = {
             "generated_at": datetime.utcnow().isoformat(),
             "source_url": source_url,
-            "report_period": extraction_data.get("fiscal_year", "N/A"),
+            "report_period": extraction_dict.get("fiscal_year", "N/A"),
             "data_source": "BSE India Annual Report",
             "generator_version": "2.0",
             "model": self.model
@@ -443,18 +477,18 @@ Create the most comprehensive analysis possible from the available data. Aim for
         self._ensure_section(snapshot_json, "company_overview", {
             "company_name": company_name,
             "cin": None,
-            "registered_office": extraction_data.get("registered_office"),
+            "registered_office": extraction_dict.get("registered_office"),
             "industry_sector": "Financial Services",
             "website": None,
             "stock_info": {"bse_code": None, "nse_symbol": None, "market_cap": None},
-            "auditor": extraction_data.get("auditor"),
+            "auditor": extraction_dict.get("auditor"),
             "auditor_opinion": None
         })
         
         self._ensure_section(snapshot_json, "financial_metrics", {
-            "current_period": extraction_data.get("fiscal_year", "N/A"),
+            "current_period": extraction_dict.get("fiscal_year", "N/A"),
             "previous_period": None,
-            "metrics": self._create_basic_metrics_list(extraction_data)
+            "metrics": self._create_basic_metrics_list(extraction_dict)
         })
         
         self._ensure_section(snapshot_json, "balance_sheet_summary", {
@@ -476,16 +510,16 @@ Create the most comprehensive analysis possible from the available data. Aim for
             "net_change_in_cash": {"value": None, "unit": "Crores"}
         })
         
-        self._ensure_section(snapshot_json, "multi_year_trends", self._create_basic_trends(extraction_data))
+        self._ensure_section(snapshot_json, "multi_year_trends", self._create_basic_trends(extraction_dict))
         
         self._ensure_section(snapshot_json, "business_segments", [])
         
         self._ensure_section(snapshot_json, "geographic_breakdown", [])
         
         self._ensure_section(snapshot_json, "performance_summary", {
-            "executive_summary": "",
-            "recent_highlights": extraction_data.get("key_highlights", [])[:10],
-            "management_guidance": extraction_data.get("outlook", ""),
+            "executive_summary": snapshot_json.get("performance_summary", {}).get("executive_summary", f"{company_name} is a company operating in the financial services sector. Detailed analysis based on annual report data."),
+            "recent_highlights": snapshot_json.get("performance_summary", {}).get("recent_highlights", extraction_dict.get("key_highlights", []))[:10],
+            "management_guidance": snapshot_json.get("performance_summary", {}).get("management_guidance", extraction_dict.get("outlook", "")),
             "key_achievements": [],
             "strategic_priorities": []
         })
@@ -510,7 +544,7 @@ Create the most comprehensive analysis possible from the available data. Aim for
         })
         
         self._ensure_section(snapshot_json, "risk_summary", {
-            "top_risks": extraction_data.get("risk_factors", [])[:8],
+            "top_risks": snapshot_json.get("risk_summary", {}).get("top_risks", extraction_dict.get("risk_factors", []))[:8],
             "risk_mitigation": None,
             "contingent_liabilities": None,
             "legal_proceedings": None
@@ -585,8 +619,12 @@ Create the most comprehensive analysis possible from the available data. Aim for
         if key not in data or data[key] is None:
             data[key] = default
     
-    def _create_basic_metrics_list(self, extraction_data: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _create_basic_metrics_list(self, extraction_data: Dict[str, Any] | str) -> List[Dict[str, Any]]:
         """Create basic financial metrics list from extraction data"""
+        # Handle string input
+        if isinstance(extraction_data, str):
+            return []
+        
         revenue_unit = extraction_data.get("revenue_unit", "Crores")
         metrics = []
         
@@ -628,8 +666,22 @@ Create the most comprehensive analysis possible from the available data. Aim for
         
         return metrics
     
-    def _create_basic_trends(self, extraction_data: Dict[str, Any]) -> Dict[str, Any]:
+    def _create_basic_trends(self, extraction_data: Dict[str, Any] | str) -> Dict[str, Any]:
         """Create basic trends structure"""
+        # Handle string input
+        if isinstance(extraction_data, str):
+            return {
+                "years": [],
+                "revenue": [],
+                "net_profit": [],
+                "ebitda": [],
+                "eps": [],
+                "ebitda_margin": [],
+                "pat_margin": [],
+                "roe": [],
+                "unit": "Crores"
+            }
+        
         fiscal_year = extraction_data.get("fiscal_year", "FY2024")
         revenue = extraction_data.get("revenue")
         net_profit = extraction_data.get("net_profit")
@@ -648,10 +700,13 @@ Create the most comprehensive analysis possible from the available data. Aim for
     
     def _generate_basic_snapshot(
         self,
-        extraction_data: Dict[str, Any],
+        extraction_data: Dict[str, Any] | str,
         company_name: str
     ) -> Dict[str, Any]:
         """Generate a basic snapshot without GPT (fallback)"""
+        # Handle string input
+        if isinstance(extraction_data, str):
+            extraction_data = {"complete_text": extraction_data}
         
         fiscal_year = extraction_data.get("fiscal_year", "N/A")
         

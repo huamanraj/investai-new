@@ -5,7 +5,7 @@ from .url_validator import (
     extract_company_code
 )
 from .scraper import scraper, BSEScraper, PDFInfo, ScrapeResult
-from .gpt_pdf_extractor import gpt_pdf_extractor, GPTPDFExtractor
+from .llama_extract_service import llama_extract_service, LlamaExtractService
 from .embeddings import embeddings_service, EmbeddingsService
 from .rag import rag_service, RAGService
 from .snapshot_generator import snapshot_generator, SnapshotGenerator
@@ -20,9 +20,9 @@ __all__ = [
     "BSEScraper",
     "PDFInfo", 
     "ScrapeResult",
-    # GPT-based PDF extractor (primary)
-    "gpt_pdf_extractor",
-    "GPTPDFExtractor",
+    # LlamaCloud-based PDF extractor (primary)
+    "llama_extract_service",
+    "LlamaExtractService",
     # Other services
     "embeddings_service",
     "EmbeddingsService",

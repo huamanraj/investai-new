@@ -266,3 +266,53 @@
 {"timestamp": "2026-01-21T17:21:02.819182", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-21T17:35:17.348579", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
 {"timestamp": "2026-01-21T17:35:22.682328", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "downloading", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T17:51:01.454271", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T17:51:11.237432", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
+{"timestamp": "2026-01-21T17:51:15.506421", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "downloading", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T17:52:46.468518", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T17:52:57.804147", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
+{"timestamp": "2026-01-21T17:54:06.575698", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T17:54:09.389655", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T17:55:55.661735", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "downloading", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T18:13:25.383122", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T18:24:27.192308", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T18:24:32.048328", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T18:24:48.387846", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
+{"timestamp": "2026-01-21T18:24:56.439287", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "downloading", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T18:28:03.664626", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
+{"timestamp": "2026-01-21T18:40:44.291707", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T18:49:40.153612", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T18:51:03.966997", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T18:53:39.425486", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T18:55:50.390555", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T18:56:09.477771", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T18:56:48.490149", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
+{"timestamp": "2026-01-21T18:58:56.868811", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T18:59:18.251156", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T19:03:17.537946", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T19:07:10.136335", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T19:10:32.611986", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T19:12:49.100250", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T19:14:03.833654", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T19:15:56.149761", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T19:26:40.456467", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T19:26:47.259309", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T19:28:05.267488", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T19:30:39.491268", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T19:30:44.129247", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T19:31:16.309519", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T19:53:17.062353", "level": "INFO", "message": "Chat created", "log_name": "api", "data": {"chat_id": "961e4999-3e30-4086-8296-56d983ca6734", "title": "give me a table of revinue ove"}}
+{"timestamp": "2026-01-21T20:07:32.369223", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T20:14:27.385768", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T20:15:49.817627", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T20:15:54.681684", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T20:24:07.661233", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T20:24:11.809063", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T20:30:04.878844", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T20:31:59.069177", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T20:33:53.629830", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T20:33:58.411358", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T20:34:25.525744", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-21T20:39:49.141115", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-21T20:39:53.813288", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T20:40:05.880092", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}

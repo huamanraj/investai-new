@@ -1,14 +1,16 @@
 """
 Resumable Background Job Processor
 Supports cancellation and resuming from the last successful step
-Uses GPT-4o-mini for PDF extraction (replaced LlamaParse/LlamaExtract)
+Uses LlamaParse for 100% PDF text extraction
 """
 import asyncio
 import uuid
 import aiohttp
+import json
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 from enum import Enum
+from pathlib import Path
 
 from sqlalchemy import update, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,7 +24,7 @@ from app.db import (
 from app.services import (
     scraper, 
     extract_company_name,
-    gpt_pdf_extractor,  # New GPT-based extractor
+    llama_extract_service,  # LlamaCloud-based extractor
     embeddings_service,
     snapshot_generator
 )
@@ -185,7 +187,7 @@ async def process_project_resumable(project_id: str, source_url: str, resume: bo
                         # CRITICAL: Check if we have documents before extracting
                         if not resume_data.get("uploaded_documents"):
                             raise Exception("No documents available for extraction. Previous step data missing.")
-                        resume_data = await _step_extracting_with_gpt(
+                        resume_data = await _step_extracting_with_llama(
                             session, project_id, job_id, company_name, resume_data
                         )
                     
@@ -208,14 +210,22 @@ async def process_project_resumable(project_id: str, source_url: str, resume: bo
                         )
                     
                     elif step == JobStep.CREATING_EMBEDDINGS:
-                        # CRITICAL: Verify we have pages before creating embeddings
-                        if not resume_data.get("pages") and not resume_data.get("pages_metadata"):
-                            # Try to get pages from DB
+                        # CRITICAL: Load extraction data from DB if not in resume_data
+                        # This ensures resume works even if extraction step completed but embedding failed
+                        if not resume_data.get("extractions") and not resume_data.get("pages"):
+                            console_logger.info(f"📦 [{job_id}] Loading extraction data from DB for embeddings...")
+                            recovery_result = await _try_recover_extraction_from_db(session, project_id)
+                            if recovery_result:
+                                resume_data["extractions"] = recovery_result.get("extractions", [])
+                                resume_data["pages"] = recovery_result.get("pages", [])
+                                console_logger.info(f"✅ [{job_id}] Loaded extraction data from DB")
+                        
+                        # Also ensure we have pages metadata
+                        if not resume_data.get("pages_metadata"):
                             pages_from_db = await _get_pages_from_db(session, project_id)
                             if pages_from_db:
                                 resume_data["pages_metadata"] = pages_from_db
-                            else:
-                                raise Exception("No page data available for embeddings. Extraction step may have failed.")
+                        
                         resume_data = await _step_creating_embeddings(
                             session, project_id, job_id, resume_data
                         )
@@ -226,6 +236,15 @@ async def process_project_resumable(project_id: str, source_url: str, resume: bo
                         )
                     
                     elif step == JobStep.GENERATING_SNAPSHOT:
+                        # CRITICAL: Load extraction data from DB if not in resume_data
+                        # This ensures resume works even if previous steps completed but snapshot failed
+                        if not resume_data.get("extractions"):
+                            console_logger.info(f"📦 [{job_id}] Loading extraction data from DB for snapshot...")
+                            recovery_result = await _try_recover_extraction_from_db(session, project_id)
+                            if recovery_result:
+                                resume_data["extractions"] = recovery_result.get("extractions", [])
+                                console_logger.info(f"✅ [{job_id}] Loaded extraction data from DB for snapshot")
+                        
                         resume_data = await _step_generating_snapshot(
                             session, project_id, job_id, company_name, source_url, resume_data
                         )
@@ -430,13 +449,57 @@ async def _mark_step_successful(
     Mark step as successful and save resume data.
     
     CRITICAL: This saves all step outputs so they can be recovered on resume.
-    PDF buffers are excluded (too large), but all structured data is saved.
+    Large data (PDF buffers, full text) is excluded - only metadata is saved.
+    Full text can be loaded from DB tables on resume.
     """
-    # Remove in-memory buffers before saving (too large for JSON)
-    resume_data_clean = {
-        k: v for k, v in resume_data.items() 
-        if not k.startswith("_") and k != "pdf_buffers"
-    }
+    # Remove in-memory buffers and large data before saving (too large for JSONB)
+    resume_data_clean = {}
+    
+    for k, v in resume_data.items():
+        if k.startswith("_") or k == "pdf_buffers":
+            continue  # Skip internal buffers
+        
+        # Clean extractions: remove full text, keep only metadata
+        if k == "extractions" and isinstance(v, list):
+            resume_data_clean[k] = [
+                {
+                    "document_id": ext.get("document_id"),
+                    "metadata": ext.get("metadata", {}),
+                    # DO NOT include "data" field - contains full text (900KB+)
+                }
+                for ext in v
+            ]
+        # Clean pages: remove text, keep only metadata
+        elif k in ("pages", "parsed_pages") and isinstance(v, list):
+            cleaned_pages = []
+            for page_item in v:
+                if isinstance(page_item, dict):
+                    if "pages" in page_item:
+                        # This is a page set with nested pages array
+                        cleaned_pages.append({
+                            "document_id": page_item.get("document_id"),
+                            "total_pages": page_item.get("total_pages"),
+                            # DO NOT include "pages" array with text - too large
+                        })
+                    elif "document_id" in page_item and "page_number" in page_item:
+                        # This is a single page
+                        cleaned_pages.append({
+                            "document_id": page_item.get("document_id"),
+                            "page_number": page_item.get("page_number"),
+                            # DO NOT include "text" field - too large
+                        })
+                    else:
+                        # Unknown format, keep minimal data
+                        cleaned_pages.append({
+                            "document_id": page_item.get("document_id"),
+                        })
+                else:
+                    # Not a dict, skip it
+                    pass
+            resume_data_clean[k] = cleaned_pages
+        else:
+            # Keep other fields as-is
+            resume_data_clean[k] = v
     
     await session.execute(
         update(ProcessingJob)
@@ -756,7 +819,7 @@ async def _step_saving_documents(
     return resume_data
 
 
-async def _step_extracting_with_gpt(
+async def _step_extracting_with_llama(
     session: AsyncSession,
     project_id: str,
     job_id: str,
@@ -764,13 +827,13 @@ async def _step_extracting_with_gpt(
     resume_data: Dict[str, Any]
 ) -> Dict[str, Any]:
     """
-    Step 3: Extract COMPLETE text and structured data using GPT-4o-mini.
+    Step 3: Extract COMPLETE text using LlamaParse.
     
-    This replaces both LlamaParse and LlamaExtract with a single GPT-based extraction.
+    Uses LlamaCloud Parse to get 100% of PDF content including tables, charts, graphs.
     Ensures ALL text is extracted - nothing missing.
     """
-    if not gpt_pdf_extractor.is_configured():
-        raise Exception("OpenAI API is not configured. Cannot extract PDF content.")
+    if not llama_extract_service.is_configured():
+        raise Exception("LlamaCloud API is not configured. Cannot extract PDF content.")
     
     await session.execute(
         update(Project)
@@ -831,9 +894,9 @@ async def _step_extracting_with_gpt(
         
         filename = f"{company_name}_{doc_info['label']}.pdf"
         
-        # Extract using configured OpenAI extraction model
+        # Extract using LlamaParse for 100% text extraction
         console_logger.info(
-            f"📊 [{job_id}] Extracting with {getattr(gpt_pdf_extractor, 'extraction_model', 'openai')}: {doc_info['label']}..."
+            f"📊 [{job_id}] Extracting with LlamaParse: {doc_info['label']}..."
         )
         
         await progress_tracker.emit(
@@ -844,7 +907,7 @@ async def _step_extracting_with_gpt(
             data={"current": idx + 1, "total": len(saved_docs)}
         )
         
-        extraction_result = await gpt_pdf_extractor.extract_from_pdf_buffer(
+        extraction_result = await llama_extract_service.extract_from_pdf_buffer(
             pdf_buffer=pdf_buffer,
             filename=filename,
             project_id=project_id
@@ -875,7 +938,8 @@ async def _step_extracting_with_gpt(
     # Clear in-memory buffers
     resume_data.pop("_pdf_buffers_in_memory", None)
     
-    # CRITICAL: Save extraction results to resume_data
+    # Save extraction results to resume_data (full data kept in memory for next steps)
+    # NOTE: Full text will be stripped when saving to DB in _mark_step_successful
     resume_data["extractions"] = extractions
     resume_data["pages"] = all_pages  # This is used for page saving and embeddings
     resume_data["parsed_pages"] = all_pages  # Legacy compatibility
@@ -886,54 +950,217 @@ async def _step_extracting_with_gpt(
     return resume_data
 
 
+async def _save_extraction_to_txt_file(
+    document_id: str,
+    document_label: str,
+    extracted_data: Dict[str, Any],
+    extraction_metadata: Dict[str, Any],
+    pages: List[Dict[str, Any]],
+    project_id: str
+) -> Optional[Path]:
+    """
+    Save extraction results to a txt file.
+    
+    Args:
+        document_id: Document UUID
+        document_label: Document label/name
+        extracted_data: Extracted structured data
+        extraction_metadata: Extraction metadata
+        pages: List of pages with text
+        project_id: Project UUID
+        
+    Returns:
+        Path to saved file or None if failed
+    """
+    try:
+        # Create logs directory structure
+        logs_dir = Path(__file__).parent.parent.parent / "logs" / "extractions"
+        logs_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create project-specific subdirectory
+        project_dir = logs_dir / project_id
+        project_dir.mkdir(exist_ok=True)
+        
+        # Create safe filename from document label
+        safe_label = "".join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in document_label)[:100]
+        timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+        filename = f"{timestamp}_{safe_label}_{document_id[:8]}.txt"
+        file_path = project_dir / filename
+        
+        # Write extraction results to file
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("=" * 80 + "\n")
+            f.write(f"EXTRACTION RESULTS - {document_label}\n")
+            f.write("=" * 80 + "\n\n")
+            
+            f.write(f"Document ID: {document_id}\n")
+            f.write(f"Extracted At: {datetime.utcnow().isoformat()}\n")
+            f.write(f"Project ID: {project_id}\n\n")
+            
+            # Write extracted structured data
+            f.write("-" * 80 + "\n")
+            f.write("STRUCTURED DATA\n")
+            f.write("-" * 80 + "\n\n")
+            f.write(json.dumps(extracted_data, indent=2, ensure_ascii=False))
+            f.write("\n\n")
+            
+            # Write extraction metadata if available
+            if extraction_metadata:
+                f.write("-" * 80 + "\n")
+                f.write("EXTRACTION METADATA\n")
+                f.write("-" * 80 + "\n\n")
+                f.write(json.dumps(extraction_metadata, indent=2, ensure_ascii=False))
+                f.write("\n\n")
+            
+            # Write all pages text
+            if pages:
+                f.write("=" * 80 + "\n")
+                f.write(f"COMPLETE TEXT EXTRACTION ({len(pages)} pages)\n")
+                f.write("=" * 80 + "\n\n")
+                
+                for page in sorted(pages, key=lambda x: x.get("page_number", 0)):
+                    page_num = page.get("page_number", 0)
+                    page_text = page.get("text", "")
+                    
+                    f.write(f"\n{'=' * 80}\n")
+                    f.write(f"PAGE {page_num}\n")
+                    f.write(f"{'=' * 80}\n\n")
+                    f.write(page_text)
+                    f.write("\n\n")
+        
+        console_logger.info(f"📄 Saved extraction to: {file_path}")
+        return file_path
+        
+    except Exception as e:
+        console_logger.error(f"❌ Failed to save extraction to txt file: {e}")
+        return None
+
+
 async def _step_saving_extraction(
     session: AsyncSession,
     project_id: str,
     job_id: str,
     resume_data: Dict[str, Any]
 ) -> Dict[str, Any]:
-    """Step 4: Save extraction results to database"""
+    """Step 4: Save extraction results to database AND txt files"""
     extractions = resume_data.get("extractions", [])
+    pages_data = resume_data.get("pages", []) or resume_data.get("parsed_pages", [])
+    saved_docs = resume_data.get("uploaded_documents", [])
     
     if not extractions:
         console_logger.info(f"⚠️ [{job_id}] No extraction data to save")
         return resume_data
     
-    console_logger.info(f"💾 [{job_id}] Saving {len(extractions)} extraction result(s)...")
+    console_logger.info(f"💾 [{job_id}] Saving {len(extractions)} extraction result(s) to database and txt files...")
     
     await progress_tracker.emit(
         job_id=job_id,
         event_type="progress",
-        message=f"Saving extraction data to database...",
+        message=f"Saving extraction data to database and files...",
         step="saving_extraction"
     )
     
     for extraction in extractions:
         document_id = uuid.UUID(extraction["document_id"])
         
+        # Get document info for filename
+        doc_info = next((d for d in saved_docs if d["id"] == str(document_id)), None)
+        document_label = doc_info.get("label", "Unknown") if doc_info else "Unknown"
+        
+        # Get pages for this document
+        doc_pages = []
+        for page_set in pages_data:
+            if page_set.get("document_id") == str(document_id):
+                doc_pages = page_set.get("pages", [])
+                break
+        
         # Check if already exists (resume scenario)
         existing = await session.execute(
             select(ExtractionResult).where(ExtractionResult.document_id == document_id)
         )
-        if existing.scalar_one_or_none():
+        existing_record = existing.scalar_one_or_none()
+        
+        if existing_record:
             console_logger.info(f"⏭️ [{job_id}] Extraction already saved for document {document_id}")
+            # Still save to txt file even if DB record exists (for backup)
+            # Build complete text for txt file
+            complete_text_for_file = extraction["data"] if isinstance(extraction["data"], str) else ""
+            if not complete_text_for_file and doc_pages:
+                complete_text_parts = []
+                for page in sorted(doc_pages, key=lambda x: x.get("page_number", 0)):
+                    page_num = page.get("page_number", 0)
+                    page_text = page.get("text", "")
+                    if page_text.strip():
+                        complete_text_parts.append(f"=== PAGE {page_num} ===\n\n{page_text}\n\n")
+                complete_text_for_file = "\n".join(complete_text_parts)
+            
+            await _save_extraction_to_txt_file(
+                document_id=str(document_id),
+                document_label=document_label,
+                extracted_data={"complete_text": complete_text_for_file},  # Wrap for txt file format
+                extraction_metadata=extraction.get("metadata", {}),
+                pages=doc_pages,
+                project_id=project_id
+            )
             continue
         
-        extracted_data = extraction["data"]
+        # Get complete text - data field now contains just the raw text string
+        extracted_data_raw = extraction["data"]
         
+        # If data is a dict (old format), extract complete_text
+        # If data is already a string (new format), use it directly
+        if isinstance(extracted_data_raw, dict):
+            complete_text = extracted_data_raw.get("complete_text", "")
+            # If complete_text not in dict, build it from pages
+            if not complete_text and doc_pages:
+                complete_text_parts = []
+                for page in sorted(doc_pages, key=lambda x: x.get("page_number", 0)):
+                    page_num = page.get("page_number", 0)
+                    page_text = page.get("text", "")
+                    if page_text.strip():
+                        complete_text_parts.append(f"=== PAGE {page_num} ===\n\n{page_text}\n\n")
+                complete_text = "\n".join(complete_text_parts)
+        else:
+            # Data is already the complete text string
+            complete_text = extracted_data_raw if isinstance(extracted_data_raw, str) else ""
+            # If empty and we have pages, build it
+            if not complete_text and doc_pages:
+                complete_text_parts = []
+                for page in sorted(doc_pages, key=lambda x: x.get("page_number", 0)):
+                    page_num = page.get("page_number", 0)
+                    page_text = page.get("text", "")
+                    if page_text.strip():
+                        complete_text_parts.append(f"=== PAGE {page_num} ===\n\n{page_text}\n\n")
+                complete_text = "\n".join(complete_text_parts)
+        
+        # Save to database - extracted_data contains ONLY the complete raw text
+        # Store as JSON string (valid JSONB) containing just the text
         extraction_record = ExtractionResult(
             document_id=document_id,
-            extracted_data=extracted_data,
+            extracted_data=complete_text,  # Just the complete text string
             extraction_metadata=extraction.get("metadata", {}),
-            company_name=extracted_data.get("company_name"),
-            fiscal_year=extracted_data.get("fiscal_year"),
-            revenue=extracted_data.get("revenue"),
-            net_profit=extracted_data.get("net_profit")
+            company_name=None,  # No structured fields
+            fiscal_year=None,
+            revenue=None,
+            net_profit=None
         )
         session.add(extraction_record)
+        
+        # Save to txt file
+        txt_file_path = await _save_extraction_to_txt_file(
+            document_id=str(document_id),
+            document_label=document_label,
+            extracted_data={"complete_text": complete_text},  # Wrap for txt file format
+            extraction_metadata=extraction.get("metadata", {}),
+            pages=doc_pages,
+            project_id=project_id
+        )
+        
+        if txt_file_path:
+            console_logger.info(f"✅ [{job_id}] Saved extraction for {document_label} to DB and file: {txt_file_path.name}")
     
     await session.commit()
-    console_logger.info(f"✅ [{job_id}] Extraction results saved")
+    console_logger.info(f"✅ [{job_id}] Extraction results saved to database and txt files")
     
     return resume_data
 
@@ -1025,27 +1252,90 @@ async def _step_creating_embeddings(
     job_id: str,
     resume_data: Dict[str, Any]
 ) -> Dict[str, Any]:
-    """Step 6: Create embeddings from page text"""
+    """
+    Step 6: Create embeddings from extracted_data (complete text) and metadata.
+    Loads data from DB if not in resume_data (for resume scenarios).
+    """
     if not embeddings_service.is_configured():
         console_logger.warning(f"⚠️ Embeddings service not configured, skipping")
         return resume_data
     
-    pages_metadata = resume_data.get("pages_metadata", [])
     saved_docs = resume_data.get("uploaded_documents", [])
+    extractions = resume_data.get("extractions", [])
+    
+    # If no extractions in resume_data, load from DB
+    if not extractions:
+        console_logger.info(f"📦 [{job_id}] Loading extraction results from DB...")
+        for doc_info in saved_docs:
+            document_id = uuid.UUID(doc_info["id"])
+            ext_result = await session.execute(
+                select(ExtractionResult).where(ExtractionResult.document_id == document_id)
+            )
+            extraction = ext_result.scalar_one_or_none()
+            if extraction:
+                # Get complete text from extracted_data
+                extracted_data = extraction.extracted_data
+                
+                # Handle different formats - JSONB can store strings in different ways
+                complete_text = ""
+                if extracted_data is None:
+                    complete_text = ""
+                elif isinstance(extracted_data, str):
+                    # Check if it's a JSON-encoded string (starts/ends with quotes)
+                    if len(extracted_data) > 1 and extracted_data.startswith('"') and extracted_data.endswith('"'):
+                        try:
+                            # It's a JSON string, decode it
+                            complete_text = json.loads(extracted_data)
+                        except (json.JSONDecodeError, ValueError):
+                            # Not valid JSON, use as-is (remove outer quotes if present)
+                            complete_text = extracted_data.strip('"')
+                    else:
+                        complete_text = extracted_data
+                elif isinstance(extracted_data, dict):
+                    complete_text = extracted_data.get("complete_text", "")
+                else:
+                    # Convert to string
+                    complete_text = str(extracted_data) if extracted_data else ""
+                
+                console_logger.info(
+                    f"✅ [{job_id}] Loaded extraction from DB for document {doc_info['id']}: "
+                    f"text_length={len(complete_text)}, type={type(extracted_data).__name__}"
+                )
+                
+                if not complete_text or not complete_text.strip():
+                    console_logger.warning(
+                        f"⚠️ [{job_id}] Extraction loaded but text is empty for document {doc_info['id']}. "
+                        f"extracted_data type: {type(extracted_data).__name__}, "
+                        f"preview: {str(extracted_data)[:200] if extracted_data else 'None'}"
+                    )
+                
+                extractions.append({
+                    "document_id": doc_info["id"],
+                    "data": complete_text,  # Complete raw text
+                    "metadata": extraction.extraction_metadata or {}
+                })
+    
+    if not extractions and not saved_docs:
+        console_logger.warning(f"⚠️ [{job_id}] No documents or extractions for embeddings")
+        return resume_data
     
     # Determine documents to process
     documents_to_process = []
-    if pages_metadata:
-        for meta in pages_metadata:
+    if extractions:
+        for extraction in extractions:
+            doc_id = extraction["document_id"]
+            doc_info = next((d for d in saved_docs if d["id"] == doc_id), None)
             documents_to_process.append({
-                "document_id": meta["document_id"],
-                "label": next((d.get("label", "") for d in saved_docs if d["id"] == meta["document_id"]), "Unknown")
+                "document_id": doc_id,
+                "label": doc_info.get("label", "Unknown") if doc_info else "Unknown",
+                "extraction": extraction
             })
     elif saved_docs:
         for doc_info in saved_docs:
             documents_to_process.append({
                 "document_id": doc_info["id"],
-                "label": doc_info.get("label", "Unknown")
+                "label": doc_info.get("label", "Unknown"),
+                "extraction": None
             })
     
     if not documents_to_process:
@@ -1057,7 +1347,7 @@ async def _step_creating_embeddings(
     await progress_tracker.emit(
         job_id=job_id,
         event_type="progress",
-        message="Converting text into searchable vectors...",
+        message="Converting extracted text into searchable vectors...",
         step="creating_embeddings"
     )
     
@@ -1066,45 +1356,231 @@ async def _step_creating_embeddings(
     for doc_info in documents_to_process:
         document_id = uuid.UUID(doc_info["document_id"])
         
-        # Fetch pages from database
-        pages_result = await session.execute(
-            select(DocumentPage).where(DocumentPage.document_id == document_id).order_by(DocumentPage.page_number)
+        # Check if embeddings from extracted_data already exist (field="complete_text")
+        # We want to recreate embeddings from extracted_data, so check for complete_text chunks
+        existing_complete_text_check = await session.execute(
+            select(TextChunk)
+            .join(DocumentPage)
+            .where(
+                DocumentPage.document_id == document_id,
+                TextChunk.field == "complete_text"  # Check for new embeddings from extracted_data
+            )
+            .limit(1)
         )
-        db_pages = pages_result.scalars().all()
-        
-        if not db_pages:
-            console_logger.warning(f"⚠️ [{job_id}] No pages found for document {document_id}")
+        if existing_complete_text_check.scalar_one_or_none():
+            console_logger.info(f"⏭️ [{job_id}] Embeddings from extracted_data already exist for document {document_id}")
             continue
         
-        # Check if embeddings already exist
-        first_page = db_pages[0]
-        existing_chunks = await session.execute(
-            select(TextChunk).where(TextChunk.page_id == first_page.id).limit(1)
+        # Delete old page-based embeddings if they exist (we're switching to extracted_data embeddings)
+        # This ensures we recreate embeddings from the complete extracted text
+        old_chunks_result = await session.execute(
+            select(TextChunk)
+            .join(DocumentPage)
+            .where(
+                DocumentPage.document_id == document_id,
+                TextChunk.field != "complete_text",  # Old embeddings
+                TextChunk.field != "extraction_metadata"  # Keep metadata chunks if any
+            )
         )
-        if existing_chunks.scalar_one_or_none():
-            console_logger.info(f"⏭️ [{job_id}] Embeddings already exist for document {document_id}")
+        old_chunks = old_chunks_result.scalars().all()
+        if old_chunks:
+            console_logger.info(f"🗑️ [{job_id}] Deleting {len(old_chunks)} old page-based embeddings, recreating from extracted_data...")
+            # Delete associated embeddings first (cascade might handle this, but be explicit)
+            for old_chunk in old_chunks:
+                # Delete embedding if exists
+                emb_result = await session.execute(
+                    select(Embedding).where(Embedding.chunk_id == old_chunk.id)
+                )
+                old_embedding = emb_result.scalar_one_or_none()
+                if old_embedding:
+                    await session.delete(old_embedding)
+                await session.delete(old_chunk)
+            await session.flush()
+        
+        # Get extraction data (complete text + metadata)
+        # Always try to load from DB first to ensure we have the latest data
+        extraction = None
+        extraction_record = None
+        
+        # Try to load from DB
+        ext_result = await session.execute(
+            select(ExtractionResult).where(ExtractionResult.document_id == document_id)
+        )
+        extraction_record = ext_result.scalar_one_or_none()
+        
+        if extraction_record:
+            extracted_data = extraction_record.extracted_data
+            
+            # Handle different formats of extracted_data
+            # JSONB can store strings in different ways depending on how it was inserted
+            complete_text = ""
+            if extracted_data is None:
+                complete_text = ""
+            elif isinstance(extracted_data, str):
+                # Check if it's a JSON-encoded string (wrapped in quotes)
+                trimmed = extracted_data.strip()
+                if len(trimmed) > 1 and trimmed.startswith('"') and trimmed.endswith('"'):
+                    try:
+                        # It's a JSON string value, decode it
+                        complete_text = json.loads(extracted_data)
+                    except (json.JSONDecodeError, ValueError):
+                        # Not valid JSON, try removing outer quotes manually
+                        complete_text = trimmed[1:-1] if len(trimmed) > 1 else extracted_data
+                else:
+                    complete_text = extracted_data
+            elif isinstance(extracted_data, dict):
+                complete_text = extracted_data.get("complete_text", "")
+            else:
+                # Try to convert to string
+                complete_text = str(extracted_data) if extracted_data else ""
+            
+            console_logger.info(
+                f"📦 [{job_id}] Loaded extraction from DB for document {document_id}: "
+                f"text_length={len(complete_text) if complete_text else 0}, "
+                f"type={type(extracted_data).__name__}"
+            )
+            
+            extraction = {
+                "data": complete_text,
+                "metadata": extraction_record.extraction_metadata or {}
+            }
+        else:
+            # Fallback to resume_data extraction if DB doesn't have it
+            extraction = doc_info.get("extraction")
+            if extraction:
+                console_logger.info(f"📦 [{job_id}] Using extraction from resume_data for document {document_id}")
+        
+        if not extraction:
+            console_logger.warning(f"⚠️ [{job_id}] No extraction data found for document {document_id}")
             continue
         
-        # Chunk all pages
-        all_chunks = []
-        for page in db_pages:
-            if not page.page_text or not page.page_text.strip():
+        # Get complete text and metadata
+        complete_text = extraction.get("data", "")
+        if isinstance(complete_text, dict):
+            complete_text = complete_text.get("complete_text", "")
+        
+        extraction_metadata = extraction.get("metadata", {})
+        
+        # Debug logging
+        console_logger.info(
+            f"📊 [{job_id}] Processing extraction for document {document_id}: "
+            f"text_length={len(complete_text) if complete_text else 0}, "
+            f"has_metadata={bool(extraction_metadata)}"
+        )
+        
+        if not complete_text or not complete_text.strip():
+            # Try to load from txt file as fallback
+            console_logger.warning(
+                f"⚠️ [{job_id}] Empty extraction text for document {document_id}. "
+                f"Trying to load from txt file..."
+            )
+            
+            # Try to find and read the extraction txt file
+            logs_dir = Path(__file__).parent.parent.parent / "logs" / "extractions"
+            project_dir = logs_dir / project_id if logs_dir.exists() else None
+            
+            if project_dir and project_dir.exists():
+                # Find the most recent txt file for this document
+                txt_files = list(project_dir.glob(f"*_{document_id[:8]}.txt"))
+                if txt_files:
+                    # Sort by modification time, get most recent
+                    txt_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+                    latest_file = txt_files[0]
+                    
+                    try:
+                        console_logger.info(f"📄 [{job_id}] Reading extraction from txt file: {latest_file.name}")
+                        with open(latest_file, "r", encoding="utf-8") as f:
+                            file_content = f.read()
+                        
+                        # Extract complete text section from txt file
+                        if "COMPLETE TEXT EXTRACTION" in file_content:
+                            # Find the section and extract all page text
+                            start_marker = "COMPLETE TEXT EXTRACTION"
+                            start_idx = file_content.find(start_marker)
+                            if start_idx != -1:
+                                # Extract everything after the marker
+                                complete_text = file_content[start_idx + len(start_marker):].strip()
+                                # Remove any trailing metadata sections
+                                if "=" * 80 in complete_text:
+                                    complete_text = complete_text.split("=" * 80)[0].strip()
+                                
+                                console_logger.info(
+                                    f"✅ [{job_id}] Loaded {len(complete_text)} characters from txt file"
+                                )
+                    except Exception as e:
+                        console_logger.error(f"❌ [{job_id}] Failed to read txt file: {e}")
+            
+            # Debug logging
+            if extraction_record:
+                console_logger.warning(
+                    f"⚠️ [{job_id}] Raw extracted_data from DB: "
+                    f"type={type(extraction_record.extracted_data).__name__}, "
+                    f"preview={str(extraction_record.extracted_data)[:500] if extraction_record.extracted_data else 'None'}"
+                )
+            
+            if not complete_text or not complete_text.strip():
+                console_logger.error(
+                    f"❌ [{job_id}] Cannot create embeddings: No extraction text found in DB or txt file for document {document_id}"
+                )
                 continue
-            
-            page_chunks = embeddings_service.chunk_text(page.page_text)
-            
-            for chunk_idx, chunk_text in enumerate(page_chunks):
-                all_chunks.append({
-                    "page_id": str(page.id),
-                    "page_number": page.page_number,
-                    "chunk_index": chunk_idx,
-                    "content": chunk_text
-                })
+        
+        # Get first page ID for linking chunks (required by schema)
+        # We'll use first page as anchor, but mark chunks with field="complete_text"
+        pages_result = await session.execute(
+            select(DocumentPage).where(DocumentPage.document_id == document_id).order_by(DocumentPage.page_number).limit(1)
+        )
+        first_page = pages_result.scalar_one_or_none()
+        
+        if not first_page:
+            console_logger.warning(f"⚠️ [{job_id}] No pages found for document {document_id}, cannot create embeddings")
+            continue
+        
+        anchor_page_id = str(first_page.id)
+        
+        # Chunk the complete text (respects token limits)
+        text_chunks = embeddings_service.chunk_text(complete_text)
+        
+        # Also create chunks from metadata if available
+        metadata_chunks = []
+        if extraction_metadata:
+            # Convert metadata to text chunks
+            metadata_text = json.dumps(extraction_metadata, indent=2, ensure_ascii=False)
+            metadata_chunks = embeddings_service.chunk_text(metadata_text)
+        
+        # Combine all chunks
+        all_chunks = []
+        
+        # Add metadata chunks first (with metadata flag)
+        for chunk_idx, chunk_text in enumerate(metadata_chunks):
+            all_chunks.append({
+                "page_id": anchor_page_id,  # Use anchor page ID (required by schema)
+                "page_number": None,
+                "chunk_index": chunk_idx,
+                "content": f"[METADATA] {chunk_text}",
+                "field": "extraction_metadata",
+                "is_metadata": True
+            })
+        
+        # Add text chunks (from complete text)
+        text_chunk_start_idx = len(all_chunks)
+        for chunk_idx, chunk_text in enumerate(text_chunks):
+            all_chunks.append({
+                "page_id": anchor_page_id,  # Use anchor page ID (required by schema)
+                "page_number": None,
+                "chunk_index": text_chunk_start_idx + chunk_idx,
+                "content": chunk_text,
+                "field": "complete_text",  # Mark as complete text chunk
+                "is_metadata": False
+            })
         
         if not all_chunks:
+            console_logger.warning(f"⚠️ [{job_id}] No chunks created for document {document_id}")
             continue
         
-        console_logger.info(f"📦 [{job_id}] Created {len(all_chunks)} chunks from {len(db_pages)} pages")
+        console_logger.info(
+            f"📦 [{job_id}] Created {len(all_chunks)} chunks "
+            f"({len(metadata_chunks)} metadata + {len(text_chunks)} text) for document {document_id}"
+        )
         
         await progress_tracker.emit(
             job_id=job_id,
@@ -1114,24 +1590,125 @@ async def _step_creating_embeddings(
             data={"document": doc_info["label"], "chunk_count": len(all_chunks)}
         )
         
-        # Create embeddings
-        chunk_contents = [chunk["content"] for chunk in all_chunks]
-        embeddings_list = await embeddings_service.create_embeddings_batch(
-            texts=chunk_contents,
-            project_id=project_id
+        # Create and save embeddings sequentially (one by one) directly to DB
+        # This avoids storing huge embedding vectors in resume_data
+        console_logger.info(f"📊 [{job_id}] Creating and saving {len(all_chunks)} embeddings sequentially...")
+        
+        saved_count = 0
+        failed_count = 0
+        
+        # Commit in batches to avoid connection timeouts
+        commit_batch_size = 50
+        
+        for idx, chunk in enumerate(all_chunks, 1):
+            try:
+                # Create embedding for this chunk
+                embedding_vector = await embeddings_service.create_embedding(chunk["content"])
+                
+                if embedding_vector:
+                    # Save directly to database
+                    try:
+                        page_id_str = chunk.get("page_id")
+                        if not page_id_str:
+                            console_logger.warning(
+                                f"⚠️ [{job_id}] Chunk {idx}/{len(all_chunks)} missing page_id, skipping"
+                            )
+                            failed_count += 1
+                            continue
+                        
+                        page_id = uuid.UUID(page_id_str)
+                        
+                        # Create TextChunk
+                        text_chunk = TextChunk(
+                            page_id=page_id,
+                            chunk_index=chunk.get("chunk_index", idx - 1),
+                            content=chunk.get("content", ""),
+                            field=chunk.get("field")
+                        )
+                        session.add(text_chunk)
+                        await session.flush()
+                        
+                        # Create Embedding
+                        embedding = Embedding(
+                            chunk_id=text_chunk.id,
+                            embedding=embedding_vector
+                        )
+                        session.add(embedding)
+                        saved_count += 1
+                        
+                        # Commit in batches to avoid connection timeouts
+                        if saved_count % commit_batch_size == 0:
+                            try:
+                                await session.commit()
+                                console_logger.info(
+                                    f"💾 [{job_id}] Committed batch: {saved_count} embeddings saved "
+                                    f"({idx}/{len(all_chunks)} processed)"
+                                )
+                            except Exception as commit_error:
+                                console_logger.error(
+                                    f"❌ [{job_id}] Error committing batch: {commit_error}"
+                                )
+                                await session.rollback()
+                                # Continue processing - embeddings are already saved in previous commits
+                        
+                        # Log progress every 50 chunks
+                        if idx % 50 == 0 or idx == len(all_chunks):
+                            console_logger.info(
+                                f"✅ [{job_id}] Created and saved embedding {idx}/{len(all_chunks)} "
+                                f"for document {document_id}"
+                            )
+                    except Exception as save_error:
+                        console_logger.error(
+                            f"❌ [{job_id}] Error saving embedding {idx}/{len(all_chunks)}: {save_error}"
+                        )
+                        failed_count += 1
+                        await session.rollback()
+                        # Continue with next chunk
+                        continue
+                else:
+                    console_logger.warning(
+                        f"⚠️ [{job_id}] Failed to create embedding for chunk {idx}/{len(all_chunks)}"
+                    )
+                    failed_count += 1
+                
+                # Small delay to avoid rate limits (if needed)
+                if idx % 100 == 0:
+                    await asyncio.sleep(0.1)
+                    
+            except Exception as e:
+                console_logger.error(
+                    f"❌ [{job_id}] Error creating embedding {idx}/{len(all_chunks)}: {e}"
+                )
+                failed_count += 1
+                # Continue with next chunk even if one fails
+                continue
+        
+        # Final commit for any remaining embeddings
+        try:
+            await session.commit()
+            console_logger.info(
+                f"💾 [{job_id}] Final commit: {saved_count} embeddings saved for document {document_id}"
+            )
+        except Exception as commit_error:
+            console_logger.error(f"❌ [{job_id}] Error in final commit: {commit_error}")
+            await session.rollback()
+        
+        console_logger.info(
+            f"✅ [{job_id}] Completed embeddings for document {document_id}: "
+            f"{saved_count} saved, {failed_count} failed out of {len(all_chunks)} total"
         )
         
+        # Store only metadata in resume_data, not the actual embeddings
         embeddings_data.append({
             "document_id": doc_info["document_id"],
-            "chunks": all_chunks,
-            "embeddings": [
-                emb if emb else None
-                for emb in embeddings_list
-            ]
+            "chunks_count": len(all_chunks),
+            "saved_count": saved_count,
+            "failed_count": failed_count
         })
     
+    # Store only metadata, not actual embeddings
     resume_data["embeddings_data"] = embeddings_data
-    console_logger.info(f"✅ [{job_id}] Embeddings created for {len(embeddings_data)} documents")
+    console_logger.info(f"✅ [{job_id}] Embeddings created and saved for {len(embeddings_data)} documents")
     
     return resume_data
 
@@ -1142,19 +1719,19 @@ async def _step_saving_embeddings(
     job_id: str,
     resume_data: Dict[str, Any]
 ) -> Dict[str, Any]:
-    """Step 7: Save embeddings to database"""
+    """Step 7: Verify embeddings were saved (they're saved directly during creation now)"""
     embeddings_data = resume_data.get("embeddings_data", [])
     
     if not embeddings_data:
-        console_logger.info(f"⚠️ [{job_id}] No embeddings to save")
+        console_logger.info(f"⚠️ [{job_id}] No embeddings metadata found")
         return resume_data
     
-    console_logger.info(f"💾 [{job_id}] Saving embeddings to database...")
+    console_logger.info(f"✅ [{job_id}] Verifying embeddings were saved to database...")
     
     await progress_tracker.emit(
         job_id=job_id,
         event_type="progress",
-        message="Saving embeddings to vector database...",
+        message="Verifying embeddings in database...",
         step="saving_embeddings"
     )
     
@@ -1164,69 +1741,39 @@ async def _step_saving_embeddings(
     for emb_data in embeddings_data:
         document_id = uuid.UUID(emb_data["document_id"])
         
-        # Check if embeddings already exist
-        existing_check = await session.execute(
-            select(TextChunk)
-            .join(DocumentPage)
-            .where(DocumentPage.document_id == document_id)
-            .limit(1)
-        )
-        if existing_check.scalar_one_or_none():
-            console_logger.info(f"⏭️ [{job_id}] Embeddings already saved for document {document_id}")
-            continue
-        
+        # Verify embeddings exist in database
         try:
-            chunks = emb_data.get("chunks", [])
-            embeddings = emb_data.get("embeddings", [])
-            
-            pair_count = min(len(chunks), len(embeddings))
-            
-            for i in range(pair_count):
-                chunk_data = chunks[i]
-                embedding_vector = embeddings[i]
-                
-                if embedding_vector is None:
-                    continue
-                
-                page_id_str = chunk_data.get("page_id")
-                if not page_id_str:
-                    continue
-                
-                page_id = uuid.UUID(page_id_str)
-                
-                text_chunk = TextChunk(
-                    page_id=page_id,
-                    chunk_index=chunk_data.get("chunk_index", i),
-                    content=chunk_data.get("content", ""),
-                    field=chunk_data.get("field")
-                )
-                session.add(text_chunk)
-                await session.flush()
-                
-                embedding = Embedding(
-                    chunk_id=text_chunk.id,
-                    embedding=embedding_vector
-                )
-                session.add(embedding)
-                total_saved += 1
-            
-            docs_processed += 1
-            
-            await progress_tracker.emit(
-                job_id=job_id,
-                event_type="progress",
-                message=f"Saved embeddings {docs_processed}/{len(embeddings_data)}",
-                step="saving_embeddings",
-                data={"saved": total_saved}
+            # Get actual count
+            from sqlalchemy import func
+            chunks_result = await session.execute(
+                select(func.count(TextChunk.id))
+                .join(DocumentPage)
+                .where(DocumentPage.document_id == document_id)
             )
+            actual_count = chunks_result.scalar() or 0
             
+            expected_count = emb_data.get("saved_count", 0)
+            
+            if actual_count > 0:
+                console_logger.info(
+                    f"✅ [{job_id}] Verified {actual_count} embeddings saved for document {document_id} "
+                    f"(expected: {expected_count})"
+                )
+                total_saved += actual_count
+                docs_processed += 1
+            else:
+                console_logger.warning(
+                    f"⚠️ [{job_id}] No embeddings found in DB for document {document_id}"
+                )
+                
         except Exception as e:
-            console_logger.error(f"❌ [{job_id}] Error saving embeddings for doc {document_id}: {e}")
-            await session.rollback()
-            raise
+            console_logger.error(f"❌ [{job_id}] Error verifying embeddings for doc {document_id}: {e}")
+            # Don't fail the step, just log the error
+            continue
     
-    await session.commit()
-    console_logger.info(f"✅ [{job_id}] Saved {total_saved} embeddings from {docs_processed} documents")
+    console_logger.info(
+        f"✅ [{job_id}] Verified {total_saved} embeddings from {docs_processed} documents"
+    )
     
     # Update job stats
     await session.execute(
@@ -1273,9 +1820,30 @@ async def _step_generating_snapshot(
         step="generating_snapshot"
     )
     
-    # Use first extraction
-    extracted_data = extractions[0]["data"]
+    # Use first extraction - load from DB if not in resume_data
+    extracted_data = None
+    if extractions and len(extractions) > 0:
+        # Check if we have data field (might be removed for resume)
+        if "data" in extractions[0]:
+            extracted_data = extractions[0]["data"]
+        else:
+            # Load from DB
+            document_id = uuid.UUID(extractions[0]["document_id"])
+            ext_result = await session.execute(
+                select(ExtractionResult).where(ExtractionResult.document_id == document_id)
+            )
+            extraction_record = ext_result.scalar_one_or_none()
+            if extraction_record and extraction_record.extracted_data:
+                # Handle JSONB string format
+                if isinstance(extraction_record.extracted_data, str):
+                    extracted_data = extraction_record.extracted_data
+                else:
+                    extracted_data = str(extraction_record.extracted_data)
     
+    if not extracted_data:
+        raise Exception(f"No extraction data available for snapshot generation. Document may not have been extracted yet.")
+    
+    # Generate snapshot - this will raise exception on failure (no silent fallback)
     snapshot_data = await snapshot_generator.generate_snapshot(
         extraction_data=extracted_data,
         company_name=company_name,
