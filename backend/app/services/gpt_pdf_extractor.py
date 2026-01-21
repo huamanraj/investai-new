@@ -1,8 +1,9 @@
 """
 GPT PDF Extractor Service
 Uses OpenAI's GPT-4o-mini model to extract COMPLETE text and context from PDFs
-Processes large PDFs (200+ pages) by splitting into 5-page chunks
+Processes large PDFs in parallel using 3-page chunks for maximum speed
 """
+import asyncio
 import base64
 import io
 import json
@@ -28,39 +29,38 @@ except (OSError, PermissionError):
         LOGS_DIR = None
 
 
-# Optimized prompt for fast, comprehensive PDF extraction
-COMPLETE_PDF_EXTRACTION_PROMPT = """Extract ALL text, data, and context from this PDF chunk.
+# Optimized prompt for fast, precise PDF extraction
+COMPLETE_PDF_EXTRACTION_PROMPT = """Extract ALL content from this PDF chunk. Act as a precise parser.
 
-CRITICAL: Process the PDF immediately. Return ONLY JSON. No status messages.
-
-Extract from EVERY page in this chunk:
-- All text (paragraphs, headers, footers, captions, footnotes)
-- Tables: All data with column/row structure preserved
-- Charts/Graphs: Titles, axis labels, data points, values, legends, trends
-- Lists, sidebars, text boxes
-
-Return JSON with an array of page texts in order:
+Return ONLY valid JSON with this exact structure:
 {
-  "pages": [
-    "Complete text from first page with all tables, chart data, numbers...",
-    "Complete text from second page...",
-    "Complete text from third page..."
-  ]
+  "pages": {
+    "PAGE_NUM_1": "extracted text...",
+    "PAGE_NUM_2": "extracted text...",
+    "PAGE_NUM_3": "extracted text..."
+  }
 }
 
-Requirements:
-- Extract EVERYTHING visible - no omissions
-- Preserve logical reading order
-- Tables: Clear structure showing all values
-- Charts: Extract all numbers, labels, and describe what they show
-- Return one string per page in the chunk, in order
-- Return valid JSON only"""
+For each page, extract:
+- All text (headers, paragraphs, captions, footnotes, sidebars)
+- Tables: All values with clear row/column structure
+- Charts/Graphs: Type, title, axis labels, ALL data points with values (e.g., "Revenue: 2020: $500M, 2021: $650M, 2022: $800M")
+- Lists and bullet points
+
+Rules:
+- Extract EVERYTHING visible - be comprehensive
+- For graphs/charts: Brief description + all numerical values (e.g., "Bar chart - Q1: 25%, Q2: 30%, Q3: 35%, Q4: 28%")
+- For tables: Preserve structure with clear headers and values
+- No explanations or interpretations - only what's in the PDF
+- Maintain reading order
+- Use the exact page numbers provided in the keys
+- Return ONLY valid JSON"""
 
 
 class GPTPDFExtractor:
     """
     Service for extracting COMPLETE text and context from PDFs using OpenAI GPT-4o-mini.
-    Processes large PDFs (200+ pages) by splitting into 5-page chunks.
+    Processes large PDFs in parallel using 3-page chunks for maximum speed and accuracy.
     """
     
     def __init__(self):
@@ -68,7 +68,7 @@ class GPTPDFExtractor:
                                settings.OPENAI_API_KEY != "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         self._client = None
         self.extraction_model = getattr(settings, 'OPENAI_EXTRACTION_MODEL', 'gpt-4o-mini')
-        self.pages_per_chunk = 5  # Process 5 pages at a time
+        self.pages_per_chunk = 3  # Process 3 pages at a time for faster parallel processing
     
     def _get_client(self) -> AsyncOpenAI:
         """Lazy initialization of OpenAI client"""
@@ -80,9 +80,9 @@ class GPTPDFExtractor:
         
         return self._client
     
-    def _split_pdf_into_chunks(self, pdf_buffer: bytes, pages_per_chunk: int = 5) -> List[bytes]:
+    def _split_pdf_into_chunks(self, pdf_buffer: bytes, pages_per_chunk: int = 3) -> List[bytes]:
         """
-        Split a PDF into smaller PDFs of N pages each.
+        Split a PDF into smaller PDFs of N pages each (default 3 for fast parallel processing).
         
         Args:
             pdf_buffer: Original PDF as bytes
@@ -151,7 +151,7 @@ class GPTPDFExtractor:
         project_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
-        Extract text from a single PDF chunk (5 pages).
+        Extract text from a single PDF chunk (3 pages).
         
         Args:
             chunk_buffer: PDF chunk as bytes
@@ -168,8 +168,13 @@ class GPTPDFExtractor:
         # Calculate actual page numbers for this chunk
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(chunk_buffer))
         num_pages_in_chunk = len(pdf_reader.pages)
+        end_page = start_page + num_pages_in_chunk - 1
         
-        console_logger.info(f"📄 Extracting chunk {chunk_index + 1} (pages {start_page}-{start_page + num_pages_in_chunk - 1})...")
+        # Build explicit page number list for the prompt
+        page_numbers = list(range(start_page, end_page + 1))
+        page_numbers_str = ", ".join(str(p) for p in page_numbers)
+        
+        console_logger.info(f"📄 Extracting chunk {chunk_index + 1} (pages {start_page}-{end_page})...")
         
         # Convert chunk to base64
         chunk_base64 = base64.standard_b64encode(chunk_buffer).decode("utf-8")
@@ -189,14 +194,15 @@ class GPTPDFExtractor:
                             {
                                 "type": "input_text",
                                 "text": (
-                                    f"This PDF chunk contains {num_pages_in_chunk} page(s). "
+                                    f"This PDF chunk contains pages {page_numbers_str}. "
+                                    f"Use these EXACT page numbers as keys in your JSON response. "
                                     f"{COMPLETE_PDF_EXTRACTION_PROMPT}"
                                 ),
                             },
                         ],
                     }
                 ],
-                # NOTE: do NOT pass response_format here; this SDK version rejects it.
+                
             )
 
             # Parse response - responses API exposes output_text
@@ -210,20 +216,44 @@ class GPTPDFExtractor:
                     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
                     debug_file = debug_dir / f"chunk_{chunk_index + 1}_{timestamp}.txt"
                     with open(debug_file, "w", encoding="utf-8") as f:
-                        f.write(f"=== CHUNK {chunk_index + 1} - Pages {start_page} onwards ===\n\n")
+                        f.write(f"=== CHUNK {chunk_index + 1} - Pages {page_numbers_str} ===\n\n")
                         f.write(result_raw)
                     console_logger.info(f"💾 Debug: Saved chunk {chunk_index + 1} response to {debug_file.name}")
                 except Exception as e:
                     console_logger.warning(f"Failed to save debug output: {e}")
             
             result = self._parse_json_object_from_text(result_raw)
-            page_texts = result.get("pages", [])
+            page_data = result.get("pages", {})
 
-            # Map extracted texts to absolute page numbers
+            # Parse page data - handle both dict (new format) and list (old format)
             pages: List[Dict[str, Any]] = []
-            for idx, text in enumerate(page_texts):
-                page_text = text if isinstance(text, str) else text.get("text", str(text))
-                pages.append({"page_number": start_page + idx, "text": page_text})
+            
+            if isinstance(page_data, dict):
+                # New format: {"pages": {"1": "text", "2": "text", "3": "text"}}
+                for page_key, text in page_data.items():
+                    try:
+                        # Parse page number from key (could be "1", "PAGE_1", etc.)
+                        page_num_str = ''.join(filter(str.isdigit, str(page_key)))
+                        page_num = int(page_num_str) if page_num_str else None
+                        
+                        if page_num is None:
+                            console_logger.warning(f"⚠️ Could not parse page number from key: {page_key}")
+                            continue
+                        
+                        page_text = text if isinstance(text, str) else str(text)
+                        pages.append({"page_number": page_num, "text": page_text})
+                    except (ValueError, TypeError) as e:
+                        console_logger.warning(f"⚠️ Error parsing page {page_key}: {e}")
+                        continue
+            
+            elif isinstance(page_data, list):
+                # Old format fallback: {"pages": ["text1", "text2", "text3"]}
+                for idx, text in enumerate(page_data):
+                    page_text = text if isinstance(text, str) else str(text)
+                    pages.append({"page_number": start_page + idx, "text": page_text})
+            
+            # Sort pages by page_number to ensure correct order
+            pages.sort(key=lambda x: x["page_number"])
 
             # If GPT returned fewer pages than expected, log warning
             if len(pages) < num_pages_in_chunk:
@@ -249,7 +279,7 @@ class GPTPDFExtractor:
     ) -> Dict[str, Any]:
         """
         Extract COMPLETE text and context from a PDF buffer.
-        Splits large PDFs into 5-page chunks and processes sequentially.
+        Splits large PDFs into 3-page chunks and processes IN PARALLEL for maximum speed.
         
         Args:
             pdf_buffer: PDF file as bytes
@@ -272,7 +302,7 @@ class GPTPDFExtractor:
         
         console_logger.info(f"📊 Starting COMPLETE PDF text extraction for: {filename}")
         job_logger.info(
-            f"Starting PDF extraction with GPT-4o-mini (chunked processing)",
+            f"Starting PDF extraction with GPT-4o-mini (parallel processing)",
             project_id=project_id,
             data={"filename": filename, "size_mb": len(pdf_buffer) / 1024 / 1024}
         )
@@ -289,34 +319,48 @@ class GPTPDFExtractor:
             pdf_reader = PyPDF2.PdfReader(io.BytesIO(pdf_buffer))
             total_pages = len(pdf_reader.pages)
             
-            console_logger.info(f"📄 Processing {total_pages} pages in {total_chunks} chunks...")
+            console_logger.info(f"📄 Processing {total_pages} pages in {total_chunks} chunks IN PARALLEL...")
             
-            # Step 2: Extract text from each chunk sequentially
-            all_pages = []
+            # Step 2: Extract text from ALL chunks in parallel using asyncio.gather
+            if on_progress:
+                on_progress({
+                    "message": f"Extracting all {total_chunks} chunks in parallel...",
+                    "step": "extraction",
+                    "progress": 10
+                })
             
+            # Create all extraction tasks
+            extraction_tasks = []
             for chunk_idx, chunk_buffer in enumerate(chunks):
                 start_page = chunk_idx * self.pages_per_chunk + 1
                 
-                if on_progress:
-                    progress = int((chunk_idx / total_chunks) * 100)
-                    on_progress({
-                        "message": f"Extracting pages {start_page}-{min(start_page + self.pages_per_chunk - 1, total_pages)} ({chunk_idx + 1}/{total_chunks})...",
-                        "step": "extraction",
-                        "progress": progress
-                    })
-                
-                # Extract this chunk
-                chunk_pages = await self._extract_chunk(
+                task = self._extract_chunk(
                     chunk_buffer=chunk_buffer,
                     chunk_index=chunk_idx,
                     start_page=start_page,
                     filename=filename,
                     project_id=project_id
                 )
-                
-                all_pages.extend(chunk_pages)
+                extraction_tasks.append(task)
             
-            console_logger.info(f"✅ Extracted text from {len(all_pages)} pages total")
+            # Execute all chunks in parallel
+            console_logger.info(f"🚀 Launching {total_chunks} parallel API calls...")
+            chunk_results = await asyncio.gather(*extraction_tasks, return_exceptions=True)
+            
+            # Process results and handle any errors
+            all_pages = []
+            for chunk_idx, result in enumerate(chunk_results):
+                if isinstance(result, Exception):
+                    console_logger.error(f"❌ Chunk {chunk_idx + 1} failed: {result}")
+                    continue
+                
+                if isinstance(result, list):
+                    all_pages.extend(result)
+            
+            # Sort pages by page number to ensure correct order
+            all_pages.sort(key=lambda x: x.get("page_number", 0))
+            
+            console_logger.info(f"✅ Extracted text from {len(all_pages)} pages total (parallel processing)")
             
             # Step 3: Extract basic document info from first few pages
             doc_summary = {}
@@ -360,10 +404,11 @@ class GPTPDFExtractor:
                 "total_pages": total_pages,
                 "metadata": {
                     "model": self.extraction_model,
-                    "extraction_method": "chunked_pdf_upload",
+                    "extraction_method": "parallel_chunked_pdf_upload",
                     "chunks_processed": total_chunks,
                     "pages_per_chunk": self.pages_per_chunk,
-                    "extracted_at": datetime.utcnow().isoformat()
+                    "extracted_at": datetime.utcnow().isoformat(),
+                    "processing_mode": "parallel"
                 },
                 "filename": filename,
                 "extracted_at": datetime.utcnow().isoformat()
@@ -372,14 +417,15 @@ class GPTPDFExtractor:
             # Save extraction log
             self._save_extraction_log(project_id, filename, extraction_result)
             
-            console_logger.info(f"✅ GPT extraction complete for: {filename}")
+            console_logger.info(f"✅ GPT extraction complete for: {filename} (parallel processing)")
             job_logger.info(
-                f"Extraction completed successfully",
+                f"Extraction completed successfully with parallel processing",
                 project_id=project_id,
                 data={
                     "filename": filename,
-                    "pages_extracted": total_pages,
-                    "chunks_processed": total_chunks
+                    "pages_extracted": len(all_pages),
+                    "chunks_processed": total_chunks,
+                    "processing_mode": "parallel"
                 }
             )
             

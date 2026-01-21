@@ -262,3 +262,7 @@
 {"timestamp": "2026-01-21T10:03:23.423426", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965", "last_step": "saving_pages", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
 {"timestamp": "2026-01-21T10:03:37.450457", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-21T10:03:49.644836", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "0ecb8fd2-6df4-4e7b-826e-027b7adb3965"}}
+{"timestamp": "2026-01-21T16:51:22.984337", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T17:21:02.819182", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-21T17:35:17.348579", "level": "INFO", "message": "Job cancelled", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2"}}
+{"timestamp": "2026-01-21T17:35:22.682328", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "downloading", "failed_step": null, "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
