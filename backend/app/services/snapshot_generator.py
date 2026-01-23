@@ -13,236 +13,61 @@ from app.core.config import settings
 from app.core.logging import console_logger, job_logger
 
 
-# Comprehensive financial document analysis prompt
-FINANCIAL_ANALYSIS_PROMPT = '''You are a specialized financial document analysis AI designed to extract critical investment information from annual reports using document embeddings. Your task is to identify, extract, and structure the most important financial data, metrics, and qualitative insights that investors need for decision-making.
+# Comprehensive financial document analysis prompt - OPTIMIZED FOR TOKEN LIMITS
+FINANCIAL_ANALYSIS_PROMPT = '''Extract investment data from annual reports into JSON.
 
-## PRIMARY EXTRACTION TARGETS
+## EXTRACT THESE DATA POINTS:
+1. Financials: Revenue, PAT, EBITDA, EPS, ROE, ROCE, D/E ratio, margins (5-8 year trends)
+2. Balance Sheet: Assets, liabilities, equity, debt, working capital
+3. Cash Flow: OCF, ICF, FCF, net change
+4. Segments: Revenue by business/geography with %
+5. Operations: Employees, facilities, capacity, production
+6. Management: Board directors, key executives with designations
+7. Contracts: Major partnerships (Baker Hughes, Saudi Aramco etc)
+8. Facilities: Manufacturing sites with location/status
+9. Green Energy: Solar MW, renewable %, savings
+10. Subsidiaries: Name, holding %, CIN
+11. Credit Rating, Share Capital, Awards
+12. Risks, ESG, Dividends, Shareholding pattern
 
-### 1. Core Financial Statements
-Extract complete data from:
-- **Balance Sheet**: Total assets, current assets, fixed assets, total liabilities, current liabilities, long-term debt, shareholders' equity, retained earnings
-- **Income Statement**: Revenue from operations, other income, cost of goods sold, gross profit, operating expenses, EBITDA, depreciation, interest expense, tax expense, net profit/PAT
-- **Cash Flow Statement**: Operating cash flow, investing cash flow, financing cash flow, free cash flow, opening and closing cash balances
+## SEARCH LOCATIONS:
+- Director's Report, MD&A, Financial Statements, Notes to Accounts
+- Chairman's Message, Corporate Governance, BRSR, Annexures
+- Performance at a Glance, 5-year summary tables
 
-### 2. Key Financial Ratios & Metrics
-Calculate or extract:
-- **Profitability**: EBITDA margin, PAT margin, gross profit margin, ROE (Return on Equity), ROCE (Return on Capital Employed), ROA (Return on Assets)
-- **Leverage**: Debt-to-Equity ratio, Net Debt-to-EBITDA, Interest Coverage ratio
-- **Liquidity**: Current ratio, quick ratio, working capital
-- **Valuation**: EPS (Earnings Per Share), P/E ratio, P/B ratio, dividend per share, dividend yield
-- **Efficiency**: Asset turnover, inventory turnover days, debtor days, creditor days
-
-### 3. Multi-Year Trend Data (5-10 years)
-Extract historical trends for:
-- Revenue growth (absolute values and YoY % change)
-- EBITDA and PAT growth
-- Margin evolution
-- EPS progression
-- Capital expenditure trends
-- R&D spending as % of revenue
-
-### 4. Business Segment Analysis
-Identify and extract:
-- Revenue breakdown by business segment/division (absolute and %)
-- Segment-wise profitability (EBIT/EBITDA by segment)
-- Geographic revenue distribution (domestic vs. export, region-wise)
-- Product/service mix evolution
-- Customer concentration (top customers' contribution if disclosed)
-
-### 5. Operational KPIs
-Extract industry-specific metrics such as:
-- Capacity utilization rates
-- Production volumes
-- Number of products/SKUs
-- Manufacturing facility details
-- Employee count and productivity metrics
-- Customer acquisition numbers
-
-### 6. Growth & Investment Data
-Identify:
-- Capital expenditure (capex) plans and completed projects
-- New facility commissioning timelines
-- Acquisition or partnership announcements
-- R&D investment (absolute and as % of revenue)
-- Technology or innovation initiatives
-
-### 7. Qualitative Strategic Information
-Extract from Management Discussion & Analysis (MD&A):
-- Management's outlook on business performance
-- Key achievements and milestones
-- Market conditions and industry trends mentioned
-- Strategic priorities for upcoming year(s)
-- Competitive positioning statements
-- Risk factors and mitigation strategies
-
-### 8. Governance & Risk Factors
-Extract:
-- Board composition and key management personnel
-- Auditor opinion (qualified/unqualified)
-- Material risks disclosed (operational, financial, regulatory, market)
-- Legal proceedings or contingent liabilities
-- Related party transactions
-- ESG initiatives and metrics
-
-### 9. Shareholder Information
-Identify:
-- Shareholding pattern (promoter, institutional, public)
-- Changes in major shareholdings
-- Share buyback or dividend announcements
-- Stock split or bonus issue details
-
-## OUTPUT STRUCTURE
-
-You MUST return a valid JSON object with this EXACT structure:
-
+## JSON OUTPUT STRUCTURE:
 {
-  "company_overview": {
-    "company_name": "string",
-    "cin": "string or null",
-    "registered_office": "string or null",
-    "industry_sector": "string",
-    "website": "string or null",
-    "stock_info": {
-      "bse_code": "string or null",
-      "nse_symbol": "string or null",
-      "market_cap": "string or null"
-    },
-    "auditor": "string or null",
-    "auditor_opinion": "string or null"
-  },
-  "financial_metrics": {
-    "current_period": "FY2024",
-    "previous_period": "FY2023",
-    "metrics": [
-      {"name": "Revenue", "current": number, "previous": number or null, "unit": "Crores", "change_percent": "string"},
-      {"name": "Net Profit", "current": number, "previous": number or null, "unit": "Crores", "change_percent": "string"},
-      {"name": "EBITDA", "current": number, "previous": number or null, "unit": "Crores", "change_percent": "string"},
-      {"name": "EPS", "current": number, "previous": number or null, "unit": "₹", "change_percent": "string"},
-      {"name": "ROE", "current": number, "previous": number or null, "unit": "%", "change_percent": "string"},
-      {"name": "ROCE", "current": number, "previous": number or null, "unit": "%", "change_percent": "string"},
-      {"name": "Debt-to-Equity", "current": number, "previous": number or null, "unit": "x", "change_percent": "string"},
-      {"name": "Current Ratio", "current": number, "previous": number or null, "unit": "x", "change_percent": "string"}
-    ]
-  },
-  "balance_sheet_summary": {
-    "total_assets": {"value": number, "unit": "Crores"},
-    "total_liabilities": {"value": number, "unit": "Crores"},
-    "shareholders_equity": {"value": number, "unit": "Crores"},
-    "current_assets": {"value": number, "unit": "Crores"},
-    "fixed_assets": {"value": number, "unit": "Crores"},
-    "long_term_debt": {"value": number, "unit": "Crores"},
-    "working_capital": {"value": number, "unit": "Crores"},
-    "retained_earnings": {"value": number, "unit": "Crores"}
-  },
-  "cash_flow_summary": {
-    "operating_cash_flow": {"value": number, "unit": "Crores"},
-    "investing_cash_flow": {"value": number, "unit": "Crores"},
-    "financing_cash_flow": {"value": number, "unit": "Crores"},
-    "free_cash_flow": {"value": number, "unit": "Crores"},
-    "net_change_in_cash": {"value": number, "unit": "Crores"}
-  },
-  "multi_year_trends": {
-    "years": ["FY2020", "FY2021", "FY2022", "FY2023", "FY2024"],
-    "revenue": [number, number, number, number, number],
-    "net_profit": [number, number, number, number, number],
-    "ebitda": [number, number, number, number, number],
-    "eps": [number, number, number, number, number],
-    "ebitda_margin": [number, number, number, number, number],
-    "pat_margin": [number, number, number, number, number],
-    "roe": [number, number, number, number, number],
-    "unit": "Crores"
-  },
-  "business_segments": [
-    {
-      "name": "string",
-      "revenue": number,
-      "revenue_percentage": number,
-      "growth_yoy": "string or null",
-      "description": "string"
-    }
-  ],
-  "geographic_breakdown": [
-    {
-      "region": "string",
-      "revenue": number,
-      "percentage": number
-    }
-  ],
-  "performance_summary": {
-    "executive_summary": "Detailed 3-4 paragraph executive summary of company performance, key achievements, and strategic direction. Should be comprehensive and insightful.",
-    "recent_highlights": ["list of 8-10 key highlights and achievements"],
-    "management_guidance": "Detailed management outlook and guidance for future periods, growth expectations, and strategic initiatives. 2-3 paragraphs.",
-    "key_achievements": ["list of major milestones achieved during the year"],
-    "strategic_priorities": ["list of strategic priorities for upcoming year"]
-  },
-  "operational_metrics": {
-    "employee_count": number or null,
-    "employee_productivity": "string or null",
-    "capacity_utilization": "string or null",
-    "production_volume": "string or null",
-    "customer_count": "string or null",
-    "facilities_count": number or null,
-    "new_products_launched": "string or null"
-  },
-  "investment_analysis": {
-    "capex_current_year": {"value": number, "unit": "Crores"},
-    "capex_planned": "string describing future capex plans",
-    "rd_investment": {"value": number or null, "unit": "Crores"},
-    "rd_as_percentage_of_revenue": number or null,
-    "acquisitions": ["list of acquisitions/partnerships"],
-    "expansion_plans": "detailed description of expansion plans"
-  },
-  "risk_summary": {
-    "top_risks": ["list of 5-8 key risks with brief descriptions"],
-    "risk_mitigation": "paragraph describing how company addresses key risks",
-    "contingent_liabilities": "string or null",
-    "legal_proceedings": "string or null"
-  },
-  "shareholding_pattern": {
-    "promoter_holding": number,
-    "institutional_holding": number,
-    "public_holding": number,
-    "changes_in_shareholding": "description of major changes"
-  },
-  "dividend_info": {
-    "dividend_per_share": number or null,
-    "dividend_yield": "string or null",
-    "payout_ratio": "string or null",
-    "dividend_history": "brief history of dividend payments"
-  },
-  "esg_highlights": {
-    "environmental_initiatives": "string or null",
-    "social_initiatives": "string or null",
-    "governance_highlights": "string or null",
-    "sustainability_goals": "string or null"
-  },
-  "key_ratios_table": [
-    {"metric": "Gross Profit Margin", "current_year": number, "previous_year": number or null, "change": "string"},
-    {"metric": "Operating Margin", "current_year": number, "previous_year": number or null, "change": "string"},
-    {"metric": "Net Profit Margin", "current_year": number, "previous_year": number or null, "change": "string"},
-    {"metric": "ROA", "current_year": number, "previous_year": number or null, "change": "string"},
-    {"metric": "Asset Turnover", "current_year": number, "previous_year": number or null, "change": "string"},
-    {"metric": "Interest Coverage", "current_year": number, "previous_year": number or null, "change": "string"}
-  ],
-  "investment_considerations": {
-    "strengths": ["list of 4-6 investment strengths"],
-    "concerns": ["list of 3-5 investment concerns or watch items"],
-    "valuation_note": "brief note on valuation metrics if available"
-  }
+  "company_overview": {"company_name":"str","cin":"str|null","registered_office":"str|null","industry_sector":"str","website":"str|null","stock_info":{"bse_code":"str|null","nse_symbol":"str|null","market_cap":"str|null"},"auditor":"str|null","auditor_opinion":"str|null"},
+  "financial_metrics": {"current_period":"FY2024","previous_period":"FY2023","metrics":[{"name":"Revenue","current":num,"previous":num|null,"unit":"Crores","change_percent":"str"},{"name":"Net Profit","current":num,"previous":num|null,"unit":"Crores","change_percent":"str"},{"name":"EBITDA","current":num,"previous":num|null,"unit":"Crores","change_percent":"str"},{"name":"EPS","current":num,"previous":num|null,"unit":"₹","change_percent":"str"},{"name":"ROE","current":num,"previous":num|null,"unit":"%","change_percent":"str"},{"name":"ROCE","current":num,"previous":num|null,"unit":"%","change_percent":"str"},{"name":"Debt-to-Equity","current":num,"previous":num|null,"unit":"x","change_percent":"str"},{"name":"Current Ratio","current":num,"previous":num|null,"unit":"x","change_percent":"str"}]},
+  "balance_sheet_summary": {"total_assets":{"value":num,"unit":"Crores"},"total_liabilities":{"value":num,"unit":"Crores"},"shareholders_equity":{"value":num,"unit":"Crores"},"current_assets":{"value":num,"unit":"Crores"},"fixed_assets":{"value":num,"unit":"Crores"},"long_term_debt":{"value":num,"unit":"Crores"},"working_capital":{"value":num,"unit":"Crores"},"retained_earnings":{"value":num,"unit":"Crores"}},
+  "cash_flow_summary": {"operating_cash_flow":{"value":num,"unit":"Crores"},"investing_cash_flow":{"value":num,"unit":"Crores"},"financing_cash_flow":{"value":num,"unit":"Crores"},"free_cash_flow":{"value":num,"unit":"Crores"},"net_change_in_cash":{"value":num,"unit":"Crores"}},
+  "multi_year_trends": {"years":["FY20","FY21","FY22","FY23","FY24"],"revenue":[num],"net_profit":[num],"ebitda":[num],"eps":[num],"ebitda_margin":[num],"pat_margin":[num],"roe":[num],"unit":"Crores"},
+  "business_segments": [{"name":"str","revenue":num,"revenue_percentage":num,"growth_yoy":"str|null","description":"str"}],
+  "geographic_breakdown": [{"region":"str","revenue":num,"percentage":num}],
+  "performance_summary": {"executive_summary":"3-4 paragraphs","recent_highlights":["8-10 items"],"management_guidance":"2-3 paragraphs","key_achievements":["list"],"strategic_priorities":["list"]},
+  "operational_metrics": {"employee_count":num|null,"average_employee_age":num|null,"employee_productivity":"str|null","capacity_utilization":"str|null","production_volume":"str|null","customer_count":"str|null","facilities_count":num|null,"new_products_launched":"str|null"},
+  "investment_analysis": {"capex_current_year":{"value":num,"unit":"Crores"},"capex_planned":"str","rd_investment":{"value":num|null,"unit":"Crores"},"rd_as_percentage_of_revenue":num|null,"acquisitions":["list"],"expansion_plans":"str"},
+  "risk_summary": {"top_risks":["5-8 risks"],"risk_mitigation":"paragraph","contingent_liabilities":"str|null","legal_proceedings":"str|null"},
+  "shareholding_pattern": {"promoter_holding":num,"institutional_holding":num,"public_holding":num,"changes_in_shareholding":"str"},
+  "dividend_info": {"dividend_per_share":num|null,"dividend_yield":"str|null","payout_ratio":"str|null","dividend_history":"str"},
+  "esg_highlights": {"environmental_initiatives":"str|null","social_initiatives":"str|null","governance_highlights":"str|null","sustainability_goals":"str|null"},
+  "key_ratios_table": [{"metric":"str","current_year":num,"previous_year":num|null,"change":"str"}],
+  "investment_considerations": {"strengths":["4-6"],"concerns":["3-5"],"valuation_note":"str"},
+  "management_team": [{"name":"str","designation":"str","type":"promoter|independent|executive"}],
+  "key_contracts": [{"partner_name":"str","contract_type":"str","description":"str","tenure":"str|null"}],
+  "manufacturing_facilities": [{"name":"str","location":"str","status":"operational|under construction|planned","description":"str|null"}],
+  "green_energy": {"solar_capacity_mw":num|null,"renewable_share":"str|null","annual_savings":"str|null","initiatives":["list"]},
+  "subsidiaries": [{"name":"str","cin":"str|null","holding_percentage":num,"business_activity":"str|null"}],
+  "awards_certifications": [{"title":"str","year":"str|null","category":"award|certification|recognition"}],
+  "credit_rating": {"agency":"str|null","rating":"str|null","outlook":"str|null"},
+  "share_capital": {"authorized_capital":"str|null","paid_up_capital":"str|null","face_value":num|null}
 }
 
-## EXTRACTION GUIDELINES
-
-1. **Prioritize quantitative data**: Always extract exact numbers with units (₹ Crores, %, etc.)
-2. **Extract multi-year trends**: Get at least 3-5 years of historical data for key metrics
-3. **Maintain context**: When extracting ratios or percentages, include the base values
-4. **Flag missing data**: Use null for fields where information is not found
-5. **Calculate derived metrics**: If direct ratios aren't provided but base data exists, calculate them
-6. **Time-stamp data**: Associate data with the correct fiscal period
-7. **Be comprehensive**: Extract as much detail as available - aim for 5-10 pages worth of content
-8. **Write detailed paragraphs**: For summaries and guidance sections, write comprehensive paragraphs, not brief bullet points
-
-Ensure all numeric values are actual numbers (not strings) except for percentages which should be formatted strings like "15.2%" or growth rates.
+## RULES:
+- Search ALL sections exhaustively before returning null
+- Extract 5-8 years of trend data from tables
+- Numbers as actual numbers, percentages as "15.2%"
+- Write comprehensive paragraphs for summaries
 '''
 
 
@@ -253,7 +78,7 @@ class SnapshotGenerator:
         self.configured = bool(settings.OPENAI_API_KEY and 
                                settings.OPENAI_API_KEY != "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         self._client = None
-        self.model = "gpt-4.1-nano"  # Using GPT-4.1-nano for comprehensive extraction
+        self.model = "gpt-4.1"  # Using GPT-4.1-nano for comprehensive extraction
     
     def _get_client(self) -> AsyncOpenAI:
         """Lazy initialization of OpenAI client"""
@@ -274,7 +99,8 @@ class SnapshotGenerator:
     ) -> Dict[str, Any]:
         """
         Generate comprehensive company snapshot from extraction data.
-        Extracts 5-10 pages worth of detailed financial analysis.
+        Uses TWO API calls to handle large documents within token limits,
+        then merges the results.
         
         Args:
             extraction_data: Extracted data from PDF extraction (can be dict or raw text string)
@@ -292,9 +118,9 @@ class SnapshotGenerator:
                 extraction_data = {"complete_text": extraction_data}
             return self._generate_basic_snapshot(extraction_data, company_name)
         
-        console_logger.info(f"📊 Generating comprehensive AI-powered snapshot for {company_name} using GPT-4.1-nano...")
+        console_logger.info(f"📊 Generating AI-powered snapshot for {company_name} using split-call strategy...")
         job_logger.info(
-            "Starting comprehensive snapshot generation",
+            "Starting split-call snapshot generation",
             project_id=project_id,
             data={"company_name": company_name, "model": self.model}
         )
@@ -302,43 +128,90 @@ class SnapshotGenerator:
         try:
             client = self._get_client()
             
-            # Build comprehensive prompt with all available data
-            # Handle both dict and string input
-            prompt = self._build_comprehensive_prompt(extraction_data, company_name, source_url)
+            # Get the text data
+            if isinstance(extraction_data, str):
+                full_text = extraction_data
+            else:
+                full_text = extraction_data.get("complete_text", "")
             
-            # Call GPT-4.1-nano for comprehensive analysis
-            # NOTE: GPT-4.1-nano only supports default temperature (1), don't pass temperature parameter
-            response = await client.chat.completions.create(
+            # Split text into two halves for two API calls
+            text_length = len(full_text)
+            half_length = text_length // 2
+            
+            # Find a good split point (at a page boundary or paragraph)
+            split_point = half_length
+            # Look for page marker near midpoint
+            page_marker_pos = full_text.find("PAGE", half_length - 1000, half_length + 1000)
+            if page_marker_pos > 0:
+                # Find start of this line
+                line_start = full_text.rfind("\n", 0, page_marker_pos)
+                if line_start > 0:
+                    split_point = line_start
+            
+            first_half = full_text[:split_point]
+            second_half = full_text[split_point:]
+            
+            # Limit each half to ~45k chars to stay within token limits
+            max_chars_per_call = 45000
+            if len(first_half) > max_chars_per_call:
+                first_half = first_half[:max_chars_per_call] + "\n[...truncated...]"
+            if len(second_half) > max_chars_per_call:
+                second_half = second_half[:max_chars_per_call] + "\n[...truncated...]"
+            
+            console_logger.info(f"📖 Split document: Part 1 = {len(first_half)} chars, Part 2 = {len(second_half)} chars")
+            
+            # Build prompts for each half
+            prompt1 = self._build_split_prompt(first_half, company_name, source_url, part=1, total_parts=2)
+            prompt2 = self._build_split_prompt(second_half, company_name, source_url, part=2, total_parts=2)
+            
+            # Make two API calls sequentially (to avoid rate limits)
+            console_logger.info(f"🔄 Making API call 1/2 for {company_name}...")
+            response1 = await client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {
-                        "role": "system",
-                        "content": FINANCIAL_ANALYSIS_PROMPT
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
+                    {"role": "system", "content": FINANCIAL_ANALYSIS_PROMPT},
+                    {"role": "user", "content": prompt1}
                 ],
-                max_completion_tokens=16000,  # Increased for comprehensive extraction
+                max_completion_tokens=8000,
                 response_format={"type": "json_object"}
-                # Do NOT pass temperature - GPT-4.1-nano only supports default (1)
             )
+            snapshot1 = json.loads(response1.choices[0].message.content)
+            tokens1 = response1.usage.total_tokens if response1.usage else 0
+            console_logger.info(f"✅ API call 1/2 complete ({tokens1} tokens)")
             
-            # Parse GPT response
-            snapshot_json = json.loads(response.choices[0].message.content)
+            # Small delay between calls to avoid rate limits
+            import asyncio
+            await asyncio.sleep(2)
+            
+            console_logger.info(f"🔄 Making API call 2/2 for {company_name}...")
+            response2 = await client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": FINANCIAL_ANALYSIS_PROMPT},
+                    {"role": "user", "content": prompt2}
+                ],
+                max_completion_tokens=8000,
+                response_format={"type": "json_object"}
+            )
+            snapshot2 = json.loads(response2.choices[0].message.content)
+            tokens2 = response2.usage.total_tokens if response2.usage else 0
+            console_logger.info(f"✅ API call 2/2 complete ({tokens2} tokens)")
+            
+            # Merge the two snapshots
+            console_logger.info(f"🔗 Merging results from both calls...")
+            merged_snapshot = self._merge_snapshots(snapshot1, snapshot2)
             
             # Enhance with metadata
-            snapshot = self._enhance_snapshot(snapshot_json, extraction_data, company_name, source_url)
+            snapshot = self._enhance_snapshot(merged_snapshot, extraction_data, company_name, source_url)
             
             console_logger.info(f"✅ Comprehensive snapshot generated successfully for {company_name}")
             job_logger.info(
-                "Snapshot generation completed",
+                "Snapshot generation completed (split-call)",
                 project_id=project_id,
                 data={
                     "company_name": company_name,
                     "sections_generated": len(snapshot.keys()),
-                    "tokens_used": response.usage.total_tokens if response.usage else None
+                    "total_tokens": tokens1 + tokens2
                 }
             )
             
@@ -352,8 +225,76 @@ class SnapshotGenerator:
                 data={"error": str(e)}
             )
             # Re-raise exception so job can fail and be resumed
-            # Don't fallback silently - let the job processor handle retry/resume
             raise
+    
+    def _build_split_prompt(
+        self,
+        text_part: str,
+        company_name: str,
+        source_url: str,
+        part: int,
+        total_parts: int
+    ) -> str:
+        """Build prompt for a split portion of the document"""
+        return f"""Analyze PART {part} of {total_parts} of the annual report for {company_name}.
+
+**Company:** {company_name}
+**Source:** {source_url}
+**Note:** This is part {part} of {total_parts}. Extract ALL data you find in this section.
+
+**Annual Report Text (Part {part}/{total_parts}):**
+{text_part}
+
+Extract ALL available data from this part. Return the complete JSON structure with null for fields not found in this section."""
+    
+    def _merge_snapshots(self, snap1: Dict[str, Any], snap2: Dict[str, Any]) -> Dict[str, Any]:
+        """Intelligently merge two snapshots, preferring non-null values"""
+        merged = {}
+        
+        all_keys = set(snap1.keys()) | set(snap2.keys())
+        
+        for key in all_keys:
+            val1 = snap1.get(key)
+            val2 = snap2.get(key)
+            
+            # If one is None/empty, use the other
+            if val1 is None or val1 == {} or val1 == []:
+                merged[key] = val2 if val2 is not None else val1
+            elif val2 is None or val2 == {} or val2 == []:
+                merged[key] = val1
+            # If both are lists, merge unique items
+            elif isinstance(val1, list) and isinstance(val2, list):
+                # For list of dicts, merge by checking for duplicates
+                merged_list = list(val1)
+                for item in val2:
+                    if isinstance(item, dict):
+                        # Check if similar item exists
+                        exists = False
+                        for existing in merged_list:
+                            if isinstance(existing, dict):
+                                # Compare first key-value
+                                if existing.get(list(existing.keys())[0] if existing else None) == item.get(list(item.keys())[0] if item else None):
+                                    exists = True
+                                    break
+                        if not exists:
+                            merged_list.append(item)
+                    elif item not in merged_list:
+                        merged_list.append(item)
+                merged[key] = merged_list
+            # If both are dicts, recursively merge
+            elif isinstance(val1, dict) and isinstance(val2, dict):
+                merged[key] = self._merge_snapshots(val1, val2)
+            # For strings, prefer longer/non-empty
+            elif isinstance(val1, str) and isinstance(val2, str):
+                merged[key] = val1 if len(val1) >= len(val2) else val2
+            # For numbers, prefer non-zero
+            elif isinstance(val1, (int, float)) and isinstance(val2, (int, float)):
+                merged[key] = val1 if val1 != 0 else val2
+            else:
+                # Default to first value
+                merged[key] = val1 if val1 is not None else val2
+        
+        return merged
     
     def _build_comprehensive_prompt(
         self,
@@ -371,16 +312,46 @@ class SnapshotGenerator:
             if len(extraction_data) > 100000:
                 text_preview += "\n\n[... text truncated for length ...]"
             
-            return f"""Analyze the following complete annual report text for {company_name} and create a COMPREHENSIVE investment snapshot.
+            return f"""Analyze the following COMPLETE annual report text for {company_name} and create a COMPREHENSIVE investment snapshot.
 
 **Company Information:**
 - Company Name: {company_name}
 - Source: {source_url}
 
+**CRITICAL: THOROUGH EXTRACTION REQUIRED**
+The text below contains the FULL annual report. You MUST search through ALL sections to extract:
+
+1. **MANDATORY MULTI-YEAR DATA** - Look for tables with FY25, FY24, FY23, FY22, FY21 etc.
+   - Search: "Performance at a Glance", "Financial Highlights", "5-Year Summary"
+   
+2. **MANAGEMENT TEAM & BOARD** - Extract ALL names and designations
+   - Search: "Board of Directors", "Key Managerial Personnel", "Corporate Governance"
+   
+3. **MANUFACTURING FACILITIES** - List all sites with locations and status
+   - Search: "Manufacturing", "Site 1/2/3/4/5", "Facilities", "Plants"
+   
+4. **KEY CONTRACTS & PARTNERSHIPS** - Major customers mentioned
+   - Search: "Baker Hughes", "Saudi Aramco", "Seqens", "contract", "partnership"
+   
+5. **SUBSIDIARIES** - From Form AOC-1 or Notes to Accounts
+   - Search: "Subsidiary", "AOC-1", "Group Companies", "100% holding"
+   
+6. **GREEN ENERGY / SOLAR** - Renewable capacity in MW
+   - Search: "Solar", "MW", "renewable", "green energy"
+   
+7. **CREDIT RATING** - Look in Director's Report
+   - Search: "credit rating", "CRISIL", "ICRA", "CARE"
+   
+8. **SHARE CAPITAL** - Authorized and Paid-up
+   - Search: "Share Capital", "Authorized", "Paid-up", "Capital Structure"
+   
+9. **GEOGRAPHIC BREAKDOWN** - Export vs Domestic revenue
+   - Search: "Export", "Domestic", "Geographic", "country-wise"
+
 **Complete Annual Report Text:**
 {text_preview}
 
-Please extract ALL financial data, metrics, trends, business segments, risks, and strategic information from this text and structure it according to the JSON schema provided in the system prompt."""
+IMPORTANT: Extract EVERY piece of data mentioned above. Search through the ENTIRE document. If a data point exists anywhere in the text, it MUST appear in your output. Do NOT return null if data is present - search again."""
         
         # Handle dict input (structured data)
         # Extract all available data
@@ -578,6 +549,41 @@ Create the most comprehensive analysis possible from the available data. Aim for
             "concerns": [],
             "valuation_note": None
         })
+        
+        # New sections for enhanced annual report data
+        self._ensure_section(snapshot_json, "management_team", [])
+        
+        self._ensure_section(snapshot_json, "key_contracts", [])
+        
+        self._ensure_section(snapshot_json, "manufacturing_facilities", [])
+        
+        self._ensure_section(snapshot_json, "green_energy", {
+            "solar_capacity_mw": None,
+            "renewable_share": None,
+            "annual_savings": None,
+            "initiatives": []
+        })
+        
+        self._ensure_section(snapshot_json, "subsidiaries", [])
+        
+        self._ensure_section(snapshot_json, "awards_certifications", [])
+        
+        self._ensure_section(snapshot_json, "credit_rating", {
+            "agency": None,
+            "rating": None,
+            "outlook": None
+        })
+        
+        self._ensure_section(snapshot_json, "share_capital", {
+            "authorized_capital": None,
+            "paid_up_capital": None,
+            "face_value": None
+        })
+        
+        # Add average_employee_age to operational_metrics if not present
+        if "operational_metrics" in snapshot_json and snapshot_json["operational_metrics"]:
+            if "average_employee_age" not in snapshot_json["operational_metrics"]:
+                snapshot_json["operational_metrics"]["average_employee_age"] = None
         
         # Legacy compatibility - create charts_data from multi_year_trends
         trends = snapshot_json.get("multi_year_trends", {})

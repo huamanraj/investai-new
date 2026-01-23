@@ -316,3 +316,15 @@
 {"timestamp": "2026-01-21T20:39:49.141115", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
 {"timestamp": "2026-01-21T20:39:53.813288", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
 {"timestamp": "2026-01-21T20:40:05.880092", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}
+{"timestamp": "2026-01-23T08:27:42.085388", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-23T08:40:57.530206", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-23T08:41:01.972714", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-23T09:17:53.629070", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-23T09:17:58.553374", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-23T09:18:25.839567", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "27ae2a79-082d-4404-8e16-c7cadb9222af", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/mps-ltd/mpsltd/532440/financials-annual-reports/"}}
+{"timestamp": "2026-01-23T09:24:19.394507", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "27ae2a79-082d-4404-8e16-c7cadb9222af", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/mps-ltd/mpsltd/532440/financials-annual-reports/"}}
+{"timestamp": "2026-01-23T09:29:48.318833", "level": "INFO", "message": "Application shutdown", "log_name": "api"}
+{"timestamp": "2026-01-23T09:29:52.452414", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-23T09:30:09.106843", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "27ae2a79-082d-4404-8e16-c7cadb9222af", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/mps-ltd/mpsltd/532440/financials-annual-reports/"}}
+{"timestamp": "2026-01-23T09:34:18.249141", "level": "INFO", "message": "Application started", "log_name": "api", "data": {"env": "development"}}
+{"timestamp": "2026-01-23T09:34:27.795953", "level": "INFO", "message": "Job resumed", "log_name": "api", "data": {"project_id": "dbdd502d-46fa-46c2-9682-ea17f4e01eb2", "last_step": "saving_embeddings", "failed_step": "generating_snapshot", "source_url": "https://www.bseindia.com/stock-share-price/aether-industries-ltd/aether/543534/financials-annual-reports/"}}

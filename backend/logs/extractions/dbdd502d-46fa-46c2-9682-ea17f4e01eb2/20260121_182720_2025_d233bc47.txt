@@ -6,29 +6,7 @@ Document ID: d233bc47-acc9-4b6b-9b55-d431118f1758
 Extracted At: 2026-01-21T18:27:20.136409
 Project ID: dbdd502d-46fa-46c2-9682-ea17f4e01eb2
 
---------------------------------------------------------------------------------
-STRUCTURED DATA
---------------------------------------------------------------------------------
 
-{
-  "company_name": null,
-  "fiscal_year": null,
-  "report_type": "Annual Report",
-  "revenue": null,
-  "revenue_unit": null,
-  "net_profit": null,
-  "operating_profit": null,
-  "eps": null,
-  "revenue_growth": null,
-  "profit_growth": null,
-  "key_highlights": [],
-  "business_segments": [],
-  "risk_factors": [],
-  "outlook": null,
-  "auditor": null,
-  "registered_office": null,
-  "charts_data": []
-}
 
 --------------------------------------------------------------------------------
 EXTRACTION METADATA
