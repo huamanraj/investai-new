@@ -4,8 +4,9 @@
 services:
   - type: web
     name: investai-backend
-    env: docker
-    dockerfilePath: ./Dockerfile
+    env: python
+    buildCommand: "pip install -r requirements.txt && playwright install chromium --with-deps"
+    startCommand: "python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     plan: starter # Use 'starter' or 'standard' for more memory (Playwright needs ~512MB+)
     healthCheckPath: /docs
     autoDeploy: true
@@ -52,7 +53,7 @@ services:
       - key: PLAYWRIGHT_TIMEOUT
         value: "60000"
       - key: PLAYWRIGHT_BROWSERS_PATH
-        value: /root/.cache/ms-playwright
+        value: /opt/render/project/src/.playwright
 
       # PDF Settings
       - key: CHUNK_SIZE
