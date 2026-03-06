@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     # Playwright
     PLAYWRIGHT_HEADLESS: bool = True
     PLAYWRIGHT_TIMEOUT: int = 30000
+    PLAYWRIGHT_BROWSERS_PATH: str = ""
     
     # PDF / Ingestion
     CHUNK_SIZE: int = 400

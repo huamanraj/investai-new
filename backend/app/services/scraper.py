@@ -42,6 +42,10 @@ import platform
 import tempfile
 
 def get_browser_args():
+    # Render native python environment requires Playwright to find its browsers
+    if os.environ.get("PLAYWRIGHT_BROWSERS_PATH"):
+        os.environ["PLAYWRIGHT_BROWSERS_PATH"] = os.environ.get("PLAYWRIGHT_BROWSERS_PATH")
+        
     if platform.system() == "Windows":
         return []
     return ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
@@ -233,12 +237,18 @@ class BSEScraper:
             if platform.system() == "Windows":
                 creation_flags = subprocess.CREATE_NO_WINDOW
             
+            # Pass environment variables including PLAYWRIGHT_BROWSERS_PATH
+            env = os.environ.copy()
+            if hasattr(settings, 'PLAYWRIGHT_BROWSERS_PATH') and settings.PLAYWRIGHT_BROWSERS_PATH:
+                 env['PLAYWRIGHT_BROWSERS_PATH'] = settings.PLAYWRIGHT_BROWSERS_PATH
+
             # Run the scraper subprocess
             process = subprocess.Popen(
                 [sys.executable, script_path, url, str(self.headless), str(self.timeout)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                creationflags=creation_flags
+                creationflags=creation_flags,
+                env=env
             )
             
             # Wait for completion with timeout
