@@ -211,7 +211,10 @@ Please ask the user to select at least one company/project to start the conversa
         messages = [{"role": "system", "content": system_prompt}]
         
         # Add chat history (last 10 messages for context)
-        messages.extend(chat_history[-10:])
+        for msg in chat_history[-10:]:
+            # Map 'ai' role to 'assistant' to prevent OpenAI API errors for existing DB messages
+            role = "assistant" if msg["role"] == "ai" else msg["role"]
+            messages.append({"role": role, "content": msg["content"]})
         
         # Add current query
         messages.append({"role": "user", "content": query})

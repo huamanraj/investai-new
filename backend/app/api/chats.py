@@ -314,7 +314,7 @@ async def send_message(
             # Step 5: Save AI response to database
             ai_message = Message(
                 chat_id=chat.id,
-                role="ai",
+                role="assistant",
                 content=full_response,
                 project_ids=project_uuids
             )
